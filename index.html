@@ -146,7 +146,8 @@
     }
     .hero-cta:hover { transform: translateY(-2px); }
     .hero-cta i { font-size: 20px; }
-    @media (max-width: 480px) { .hero-cta { font-size: 15px; padding: 16px 24px; } }
+    @media (max-width: 480px) { .hero-cta { font-size: 13px; padding: 15px 20px; gap: 6px; } }
+    @media (max-width: 480px) { .hero-cta i { font-size: 16px; } }
 
     .hero-info {
       font-size: 12px;
@@ -1710,25 +1711,25 @@
         </div>
       </div>
 
-      <!-- 鈴木監督のコメント（常に表示・LINE登録後解除） -->
+      <!-- 鈴木監督のコメント（常に表示・本文のみLINE登録後解除） -->
       <div class="blur-card reveal" id="coach-msg-card" style="display:none">
         <div class="review-lock-badge"><i class="ph-bold ph-line-logo" style="font-size:11px"></i> LINE登録後に解除</div>
-        <div class="blur-inner">
-          <div class="coach-msg-card" style="background:none;border:none;padding:0;margin:0">
-            <div class="coach-msg-header">
-              <img src="img/supervisor.png" class="coach-msg-photo" alt="鈴木監督">
-              <div>
-                <div class="coach-msg-from">鈴木監督より</div>
-                <div class="coach-msg-name">カシマアカデミーダイレクター</div>
-              </div>
-            </div>
-            <div class="coach-msg-bar"></div>
-            <div class="coach-msg-body" id="coach-msg-body"></div>
+        <div class="coach-msg-header">
+          <img src="img/supervisor.png" class="coach-msg-photo" alt="鈴木監督">
+          <div>
+            <div class="coach-msg-from">鈴木監督より</div>
+            <div class="coach-msg-name">カシマアカデミーダイレクター</div>
           </div>
         </div>
-        <div class="blur-overlay">
-          <div class="lock-circle"><i class="ph-bold ph-lock-simple" style="font-size:20px"></i></div>
-          <div class="lock-txt">LINEで確認できます</div>
+        <div class="coach-msg-bar"></div>
+        <div style="position:relative; min-height:60px">
+          <div class="blur-inner-sm">
+            <div class="coach-msg-body" id="coach-msg-body"></div>
+          </div>
+          <div class="blur-overlay">
+            <div class="lock-circle"><i class="ph-bold ph-lock-simple" style="font-size:20px"></i></div>
+            <div class="lock-txt">LINEで確認できます</div>
+          </div>
         </div>
       </div>
 
