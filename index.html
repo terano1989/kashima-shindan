@@ -146,6 +146,7 @@
       color: rgba(255,255,255,0.4);
     }
     .hero-info span { color: rgba(255,255,255,0.6); margin: 0 5px; }
+    .hero-disclaimer { font-size:10px; color:rgba(255,255,255,0.28); margin-top:8px; line-height:1.6; }
 
     /* Hero right */
     .hero-right {
@@ -1178,6 +1179,11 @@
     }
     .footer-motto { font-size:14px; font-weight:700; color:var(--gold); margin-bottom:5px; letter-spacing:0.14em; }
     .footer-copy  { font-size:10px; color:rgba(168,192,214,0.3); }
+    .result-disclaimer {
+      font-size:10px; color:rgba(184,208,240,0.35); line-height:1.8;
+      text-align:center; padding:0 8px 16px; border-top:1px solid rgba(255,255,255,0.06);
+      padding-top:14px; margin-top:4px;
+    }
 
     .reveal { opacity:0; transform:translateY(16px); transition:opacity 0.5s ease, transform 0.5s ease; }
     .reveal.in { opacity:1; transform:translateY(0); }
@@ -1229,6 +1235,7 @@
         <i class="ph-bold ph-arrow-right" style="font-size:17px"></i>
       </button>
       <p class="hero-info">3分・18問のカンタン診断<span>/</span>完全無料・結果はすぐに表示</p>
+      <p class="hero-disclaimer">※本診断は鈴木監督の指導哲学をもとにした参考コンテンツです。自己診断としてお楽しみください。</p>
     </div>
 
     <div class="hero-right">
@@ -1685,6 +1692,10 @@
       <button class="btn-secondary reveal" onclick="window.open('https://line.me/ti/p/~759iofib','_blank','noopener')">
         体験会の日程を見る <i class="ph-bold ph-arrow-right" style="font-size:14px"></i>
       </button>
+
+      <div class="result-disclaimer">
+        本診断は鹿島学園高校サッカー部 鈴木監督の指導哲学をもとに設計した参考コンテンツです。診断結果はあくまでも目安であり、お子さまの可能性のすべてを表すものではありません。自己診断としてお楽しみください。
+      </div>
 
       <div class="site-footer">
         <div class="footer-motto">前力全進</div>
