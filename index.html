@@ -214,9 +214,15 @@
     }
     @media (max-width: 720px) {
       .sup-photo {
-        height: 130px;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 185px;
+        width: auto;
         margin-top: 0;
-        align-self: flex-end;
+        align-self: auto;
+        object-fit: contain;
+        object-position: bottom center;
       }
     }
     /* 写真ラッパー：カード下部に全幅配置 */
@@ -324,6 +330,7 @@
     }
     @media (max-width: 720px) {
       .sup-strip {
+        position: relative;
         padding: 0;
         flex-wrap: wrap;
         align-items: flex-end;
@@ -340,7 +347,7 @@
       flex: 1;
       min-width: 220px;
     }
-    @media (max-width: 720px) { .sup-body { padding: 16px 16px 16px 8px; min-width: 0; flex: 1; } }
+    @media (max-width: 720px) { .sup-body { padding: 16px 16px 16px 130px; min-width: 0; flex: 1; } }
 
     .sup-credential {
       display: inline-flex; align-items: center; gap: 6px;
@@ -1307,9 +1314,7 @@
   <div class="sup-strip">
     <img src="img/supervisor.png" class="sup-photo" alt="監督">
     <div class="sup-body">
-      <div class="sup-credential">
-        <span class="sup-credential-dot"></span>監修
-      </div>
+      <div class="sup-credential">監修</div>
       <div class="sup-name">鹿島学園高校サッカー部<br><strong>鈴木 監督</strong></div>
       <div class="sup-quote">
         <span class="sup-quote-bar"></span>
