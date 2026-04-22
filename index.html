@@ -286,111 +286,106 @@
     @media (max-width: 720px) { .hero-ball-deco { display:none; } }
 
     /* ============================================================
-       Supervisor strip — CSS Grid redesign
-       Desktop: [photo] [body 1fr] [divider 1px] [stats auto]
-       Mobile:  [photo 110px] [body 1fr] / [stats full-width]
+       Supervisor strip — 完全リデザイン
+       Desktop: flex row、justify-content:center で中央寄せ
+       Mobile:  grid 2col (photo|body) + stats full row
     ============================================================ */
     .sup-strip {
-      background: linear-gradient(135deg, #0b1a3a 0%, #0f2248 60%, #0d1e40 100%);
-      border-top: 1px solid rgba(255,215,0,0.3);
-      border-bottom: 1px solid rgba(255,215,0,0.15);
+      background: linear-gradient(135deg, #060e1f 0%, #0d1e40 45%, #060e1f 100%);
+      border-top: 2px solid rgba(255,215,0,0.5);
+      border-bottom: 1px solid rgba(255,215,0,0.2);
       position: relative;
       overflow: hidden;
-      /* Desktop grid */
-      display: grid;
-      grid-template-columns: auto 1fr 1px auto;
-      grid-template-areas: "photo body div stats";
+      display: flex;
       align-items: center;
+      justify-content: center;
+      padding: 0 clamp(20px, 5vw, 64px);
+      gap: 0;
     }
     .sup-strip::before {
       content: '';
-      position: absolute;
-      inset: 0;
-      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23FFD700' fill-opacity='0.025'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 100% at 50% 100%, rgba(255,215,0,0.06) 0%, transparent 70%);
       pointer-events: none;
     }
 
-    /* 監督写真 — デスクトップ */
     .sup-photo {
-      grid-area: photo;
       display: block;
-      height: 165px;
+      height: 185px;
       width: auto;
       object-fit: contain;
       object-position: bottom center;
       align-self: flex-end;
-      margin-top: -50px;
+      margin-top: -55px;
       flex-shrink: 0;
+      filter: drop-shadow(0 6px 24px rgba(0,0,0,0.6));
     }
 
-    /* テキストエリア */
     .sup-body {
-      grid-area: body;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      padding: 22px 24px 22px 12px;
+      padding: 24px 44px 24px 20px;
+      flex-shrink: 0;
     }
 
-    /* 区切り線 */
     .sup-divider {
-      grid-area: div;
+      width: 1px;
       align-self: stretch;
-      background: rgba(255,255,255,0.1);
-      margin: 20px 0;
+      background: linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.2) 25%, rgba(255,255,255,0.2) 75%, transparent 100%);
+      margin: 0;
+      flex-shrink: 0;
     }
 
-    /* 実績 */
     .sup-stats {
-      grid-area: stats;
       display: flex;
-      gap: 28px;
+      gap: 10px;
       align-items: center;
-      padding: 20px 48px 20px 32px;
+      padding: 20px 0 20px 40px;
+      flex-shrink: 0;
     }
 
     /* モバイル */
     @media (max-width: 720px) {
       .sup-strip {
+        display: grid;
         grid-template-columns: 110px 1fr;
         grid-template-rows: auto auto;
         grid-template-areas:
           "photo body"
           "stats stats";
         align-items: stretch;
+        padding: 0;
+        justify-content: unset;
       }
-
       .sup-photo {
         grid-area: photo;
-        width: 100%;
+        width: 110px;
         height: 100%;
         object-fit: cover;
         object-position: top center;
         align-self: stretch;
         margin-top: 0;
+        filter: none;
       }
-
       .sup-body {
         grid-area: body;
-        padding: 16px 14px 16px 14px;
-        align-self: center;
+        padding: 16px 14px;
       }
-
       .sup-divider { display: none; }
-
       .sup-stats {
         grid-area: stats;
+        padding: 12px 0;
         gap: 0;
-        padding: 14px 0;
         justify-content: space-around;
         border-top: 1px solid rgba(255,255,255,0.08);
-        background: rgba(0,0,0,0.12);
+        background: rgba(0,0,0,0.18);
       }
     }
 
     .sup-credential {
       display: inline-flex; align-items: center; gap: 6px;
-      font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+      font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
       color: var(--gold); text-transform: uppercase; margin-bottom: 8px;
     }
     .sup-credential-dot {
@@ -408,36 +403,44 @@
 
     .sup-quote {
       display: flex; align-items: flex-start; gap: 10px;
-      font-size: 13px; color: rgba(255,255,255,0.7); line-height: 1.8;
+      font-size: 13px; color: rgba(255,255,255,0.72); line-height: 1.8;
       font-style: italic; margin-bottom: 10px;
     }
     .sup-quote-bar {
-      display: block; width: 3px; min-height: 38px; background: var(--gold);
+      display: block; width: 3px; min-height: 38px;
+      background: linear-gradient(to bottom, var(--gold), rgba(255,215,0,0.4));
       border-radius: 2px; flex-shrink: 0; margin-top: 3px;
     }
     @media (max-width: 720px) { .sup-quote { font-size: 12px; line-height: 1.75; } }
 
     .sup-sig {
       font-family: Georgia, serif; font-style: italic;
-      color: rgba(255,215,0,0.6); font-size: 15px; letter-spacing: 0.08em;
+      color: rgba(255,215,0,0.55); font-size: 15px; letter-spacing: 0.08em;
     }
     @media (max-width: 720px) { .sup-sig { font-size: 13px; } }
 
-    .sup-stat { text-align: center; min-width: 72px; }
-    .sup-stat i { font-size: 20px; color: var(--gold); display: block; margin-bottom: 6px; }
+    .sup-stat {
+      text-align: center;
+      padding: 12px 20px;
+      background: rgba(255,215,0,0.05);
+      border: 1px solid rgba(255,215,0,0.2);
+      border-radius: 8px;
+      min-width: 84px;
+    }
+    .sup-stat i { font-size: 18px; color: var(--gold); display: block; margin-bottom: 6px; }
     @media (max-width: 720px) {
-      .sup-stat { min-width: 0; flex: 1; }
+      .sup-stat { background: none; border: none; border-radius: 0; padding: 0; flex: 1; min-width: 0; }
       .sup-stat i { font-size: 16px; margin-bottom: 4px; }
     }
     .sup-stat-num {
-      font-size: 28px; font-weight: 900; color: var(--white); line-height: 1;
+      font-size: 26px; font-weight: 900; line-height: 1;
       background: linear-gradient(135deg, #fff 40%, var(--gold));
       -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
     }
     @media (max-width: 720px) { .sup-stat-num { font-size: 20px; } }
-    .sup-stat-unit { font-size: 12px; font-weight: 700; }
+    .sup-stat-unit { font-size: 11px; font-weight: 700; }
     @media (max-width: 720px) { .sup-stat-unit { font-size: 10px; } }
-    .sup-stat-lbl { font-size: 10px; color: rgba(255,255,255,0.5); margin-top: 4px; letter-spacing: 0.03em; }
+    .sup-stat-lbl { font-size: 10px; color: rgba(255,255,255,0.5); margin-top: 5px; letter-spacing: 0.03em; }
     @media (max-width: 720px) { .sup-stat-lbl { font-size: 9px; } }
 
     /* ============================================================
