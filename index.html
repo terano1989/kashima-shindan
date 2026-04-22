@@ -912,6 +912,38 @@
     .type-name-txt { font-size:24px; font-weight:900; line-height:1.3; margin-bottom:8px; }
     .type-desc-txt { font-size:13px; color:rgba(184,208,240,1); line-height:1.8; }
 
+    /* ======= 監督メッセージカード（指導者適性なし時） ======= */
+    .coach-msg-card {
+      background: linear-gradient(135deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.03) 100%);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 18px;
+      padding: 18px 18px 16px;
+      margin-bottom: 14px;
+    }
+    .coach-msg-header {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 12px;
+    }
+    .coach-msg-photo {
+      width: 44px; height: 44px; border-radius: 50%;
+      object-fit: cover; object-position: center 15%;
+      border: 2px solid rgba(255,215,0,0.4); flex-shrink: 0;
+    }
+    .coach-msg-from {
+      font-size: 10px; color: var(--gold); font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 2px;
+    }
+    .coach-msg-name {
+      font-size: 12px; color: rgba(255,255,255,0.7); font-weight: 600;
+    }
+    .coach-msg-bar {
+      width: 32px; height: 2px; background: var(--gold);
+      border-radius: 1px; margin-bottom: 12px; opacity: 0.6;
+    }
+    .coach-msg-body {
+      font-size: 12px; color: rgba(184,208,240,0.85);
+      line-height: 1.85; font-style: italic;
+    }
+
     /* ======= 指導者適性 ドラマチック演出 ======= */
     .leader-reveal-wrap {
       margin-bottom: 14px;
@@ -1545,6 +1577,19 @@
           <div class="lock-circle"><i class="ph-bold ph-lock-simple" style="font-size:20px"></i></div>
           <div class="lock-txt">LINEで全結果を確認</div>
         </div>
+      </div>
+
+      <!-- 指導者適性が出ない時の代替：監督メッセージ -->
+      <div class="coach-msg-card reveal" id="coach-msg-card" style="display:none">
+        <div class="coach-msg-header">
+          <img src="img/supervisor.png" class="coach-msg-photo" alt="鈴木監督">
+          <div>
+            <div class="coach-msg-from">鈴木監督より</div>
+            <div class="coach-msg-name">鹿島学園高校サッカー部</div>
+          </div>
+        </div>
+        <div class="coach-msg-bar"></div>
+        <div class="coach-msg-body" id="coach-msg-body"></div>
       </div>
 
       <!-- 指導者適性 ドラマチック演出 -->
@@ -2336,8 +2381,28 @@ function buildResult() {
   renderRadar(calcRadar(answers));
   animateScore(score);
 
-  // 指導者適性 — 70点以上の場合のみドラマチック演出
+  // 指導者適性 — 70点以上のみ演出、未満は監督メッセージを表示
   const lScore = calcLeadership(answers);
+  if (lScore < 70) {
+    const coachMessages = [
+      // TYPE 0: ファンタジスタ型
+      '「自分でゴールを狙う積極性は、サッカーにとって何より大切な武器だ。その勇気を磨き続けてほしい。技術は練習で必ず追いつく。」',
+      // TYPE 1: 鉄壁の守護者型
+      '「守ることを誰よりも真剣に考えられる選手は、チームにとってかけがえない存在だ。その誠実さが、チームの土台になる。」',
+      // TYPE 2: 知将アンカー型
+      '「試合を読む力は、経験とともに磨かれる。今日感じた小さな気づきを大切にしてほしい。それが将来の判断力に必ずつながる。」',
+      // TYPE 3: 闘将ストライカー型
+      '「負けたくないという気持ちは、最も強いエネルギーだ。その闘志を、仲間のために使える選手になると、さらに大きく成長できる。」',
+      // TYPE 4: GK型
+      '「GKは、誰よりも試合全体を見なければならないポジションだ。その視野の広さを、これからの練習でどんどん磨いてほしい。」'
+    ];
+    const msgIdx = Math.min(typeIdx, coachMessages.length - 1);
+    const msgEl = document.getElementById('coach-msg-body');
+    if (msgEl) msgEl.textContent = coachMessages[msgIdx];
+    const card = document.getElementById('coach-msg-card');
+    if (card) card.style.display = 'block';
+  }
+
   if (lScore >= 70) {
     const lInfo  = getLeadershipLabel(lScore);
     const lComments = {
