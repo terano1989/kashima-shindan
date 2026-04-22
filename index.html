@@ -947,6 +947,7 @@
     /* ======= 指導者適性 ドラマチック演出 ======= */
     .leader-reveal-wrap {
       margin-bottom: 14px;
+      display: none;
       opacity: 0;
       pointer-events: none;
     }
@@ -2414,6 +2415,7 @@ function buildResult() {
 
     setTimeout(() => {
       const wrap = document.getElementById('leader-reveal-wrap');
+      wrap.style.display = 'block';
       wrap.style.opacity = '1';
       wrap.style.pointerEvents = 'auto';
 
