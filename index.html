@@ -345,43 +345,36 @@
       flex-shrink: 0;
     }
 
-    /* モバイル：テキスト左・写真右の横並び＋stats全幅 */
+    /* モバイル：デスクトップと同じ横並び構造、サイズ縮小 */
     @media (max-width: 720px) {
       .sup-strip {
-        display: flex;
-        flex-wrap: wrap;
+        padding: 0 10px 0 0;
         align-items: flex-end;
-        padding: 0;
-        gap: 0;
+        flex-wrap: nowrap;
       }
-      /* 透過PNG：右側に自然な立ち姿で表示 */
       .sup-photo {
-        order: 2;
-        width: 35%;
-        height: auto;
-        max-height: 185px;
-        object-fit: contain;
-        object-position: bottom center;
-        align-self: flex-end;
-        margin: 0 0 6px 0;
-        flex-shrink: 0;
-        filter: drop-shadow(-6px 0 18px rgba(6,14,31,0.6));
+        height: 115px;
+        margin-top: -28px;
+        filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
       }
       .sup-body {
-        order: 1;
-        width: 65%;
-        padding: 18px 8px 18px 18px;
-        flex-shrink: 0;
+        flex: 1;
+        min-width: 0;
+        padding: 12px 10px 12px 8px;
       }
-      .sup-divider { display: none; }
+      .sup-divider {
+        margin: 10px 0;
+      }
       .sup-stats {
-        order: 3;
+        flex-direction: column;
+        gap: 6px;
+        padding: 12px 0 12px 12px;
+        align-items: center;
+      }
+      .sup-stat {
+        padding: 6px 10px;
+        min-width: 64px;
         width: 100%;
-        padding: 12px 0;
-        gap: 0;
-        justify-content: space-around;
-        border-top: 1px solid rgba(255,255,255,0.08);
-        background: rgba(0,0,0,0.18);
       }
     }
 
