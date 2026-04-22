@@ -349,7 +349,7 @@
     @media (max-width: 720px) {
       .sup-strip {
         display: grid;
-        grid-template-columns: 110px 1fr;
+        grid-template-columns: 135px 1fr;
         grid-template-rows: auto auto;
         grid-template-areas:
           "photo body"
@@ -360,7 +360,7 @@
       }
       .sup-photo {
         grid-area: photo;
-        width: 110px;
+        width: 135px;
         height: 100%;
         object-fit: cover;
         object-position: top center;
@@ -368,9 +368,22 @@
         margin-top: 0;
         filter: none;
       }
+      /* 写真右端のグラデーションフェード */
+      .sup-strip::after {
+        content: '';
+        position: absolute;
+        top: 0; left: 0;
+        width: 155px;
+        height: calc(100% - 52px); /* stats行の高さを除く */
+        background: linear-gradient(to right, transparent 80px, rgba(6,14,31,0.85) 100%);
+        pointer-events: none;
+        z-index: 1;
+      }
       .sup-body {
         grid-area: body;
-        padding: 16px 14px;
+        padding: 16px 14px 16px 12px;
+        position: relative;
+        z-index: 2;
       }
       .sup-divider { display: none; }
       .sup-stats {
@@ -380,6 +393,8 @@
         justify-content: space-around;
         border-top: 1px solid rgba(255,255,255,0.08);
         background: rgba(0,0,0,0.18);
+        position: relative;
+        z-index: 2;
       }
     }
 
