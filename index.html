@@ -900,7 +900,8 @@
     .blur-lock {
       position:absolute; inset:0;
       display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
-      background:rgba(26,45,90,0.38); opacity:0; transition:opacity 0.6s;
+      background:rgba(15,30,70,0.82); opacity:0; transition:opacity 0.6s;
+      backdrop-filter:blur(3px);
     }
     .blur-lock.show { opacity:1; }
     .lock-circle {
@@ -919,9 +920,11 @@
       border-radius:20px; padding:20px; margin-bottom:14px;
       position:relative; overflow:hidden;
     }
-    .blur-inner    { filter:blur(10px); user-select:none; pointer-events:none; }
-    .blur-inner-sm { filter:blur(8px);  user-select:none; pointer-events:none; }
-    .blur-overlay  { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; }
+    /* === 確認用：blur一時解除 (本番用に戻す時は blur-lock/inner/overlay を復元) === */
+    .blur-inner    { filter:none !important; user-select:auto !important; pointer-events:auto !important; }
+    .blur-inner-sm { filter:none !important; user-select:auto !important; pointer-events:auto !important; }
+    .blur-overlay  { display:none !important; }
+    .blur-lock     { display:none !important; }
 
     .cat-lbl { font-size:11px; color:rgba(184,208,240,1); margin-bottom:4px; letter-spacing:0.05em; }
     .cat-val  { font-size:20px; font-weight:700; color:var(--gold-light); margin-bottom:4px; }
@@ -1274,7 +1277,7 @@
     <div id="screen-question" class="qscreen">
       <div class="prog-header">
         <div class="prog-top">
-          <span class="prog-label">Q<strong id="q-cur">1</strong> / 12</span>
+          <span class="prog-label">Q<strong id="q-cur">1</strong> / <span id="q-total">-</span></span>
           <span class="prog-pct" id="q-pct">8%</span>
         </div>
         <div class="prog-track">
@@ -1439,121 +1442,218 @@
 // 質問データ
 // =============================================
 const QUESTIONS = [
+
+  // ── 基本情報 ──
   {
     id:1, type:'single', text:'お子さまの学年は？', note:'',
     options:[
-      {label:'年長（6歳）',         icon:'ph-baby'},
-      {label:'小学1〜2年生',        icon:'ph-person-simple'},
-      {label:'小学3〜4年生',        icon:'ph-person-simple-run'},
-      {label:'小学5〜6年生',        icon:'ph-person-simple-bike'},
-      {label:'中学生',              icon:'ph-student'}
+      {label:'年長・小学1年生',  icon:'ph-baby'},
+      {label:'小学2〜3年生',     icon:'ph-person-simple'},
+      {label:'小学4〜5年生',     icon:'ph-person-simple-run'},
+      {label:'小学6年生',        icon:'ph-person-simple-bike'},
+      {label:'中学生',           icon:'ph-student'}
     ]
   },
   {
-    id:2, type:'single', text:'サッカー経験は？', note:'',
+    id:2, type:'single', text:'サッカー経験はどのくらいですか？', note:'',
     options:[
       {label:'未経験（これから始める）', icon:'ph-star'},
       {label:'経験1年未満',             icon:'ph-star-half'},
       {label:'経験1〜3年',              icon:'ph-soccer-ball'},
-      {label:'経験3年以上',             icon:'ph-trophy'}
+      {label:'経験3〜5年',              icon:'ph-trophy'},
+      {label:'経験5年以上',             icon:'ph-medal'}
+    ]
+  },
+
+  // ── ポジション・役割 ──
+  {
+    id:3, type:'single',
+    text:'気になるポジション・役割は？', note:'',
+    options:[
+      {label:'フォワード（点を取る・仕掛ける）',       icon:'ph-fire'},
+      {label:'ミッドフィルダー（つなぐ・走る・司令塔）', icon:'ph-compass'},
+      {label:'ディフェンダー（守る・跳ね返す）',        icon:'ph-shield-check'},
+      {label:'ゴールキーパー（ゴールを守る・配球する）', icon:'ph-hands-praying'},
+      {label:'まだわからない・全部やってみたい',         icon:'ph-question'}
+    ]
+  },
+
+  // ── 【心①】メンタル・回復力 ──
+  {
+    id:4, type:'single',
+    text:'試合で大事な場面にシュートを外してしまいました。\nお子さまはその後どう動きますか？',
+    note:'鈴木監督が重視する「逆境での自己回復力」を診断します',
+    options:[
+      {label:'すぐ気持ちを切り替えて次のプレーに集中する',    icon:'ph-lightning'},
+      {label:'悔しさをエネルギーに変えてもっと激しく動く',    icon:'ph-fire'},
+      {label:'落ち着いてどこが悪かったか頭の中で整理する',    icon:'ph-brain'},
+      {label:'仲間や親に話を聞いてもらってから立て直す',      icon:'ph-chats'}
     ]
   },
   {
-    id:3, type:'single', text:'お子さまの性格に近いのは？', note:'',
+    id:4, type:'single',
+    text:'練習で同じミスを3回繰り返してしまいました。\n次にどうしますか？',
+    note:'鈴木監督が重視する「失敗から学ぶ姿勢」を診断します',
     options:[
-      {label:'元気・活発で目立ちたがり', icon:'ph-lightning'},
-      {label:'真面目・コツコツ努力家',   icon:'ph-book-open'},
-      {label:'仲間思い・チームワーク重視', icon:'ph-handshake'},
-      {label:'負けず嫌い・競争好き',     icon:'ph-sword'}
+      {label:'なぜミスが起きたか自分で考えてから再挑戦する',  icon:'ph-magnifying-glass'},
+      {label:'コーチや仲間に「何が悪いか」を素直に聞く',      icon:'ph-ear'},
+      {label:'考えすぎず、とにかくできるまでやり続ける',       icon:'ph-repeat'},
+      {label:'一度別のメニューに切り替えて気持ちをリセットする', icon:'ph-arrows-clockwise'}
+    ]
+  },
+
+  // ── 【心②】リーダーシップ・共感力 ──
+  {
+    id:5, type:'single',
+    text:'仲間がミスして試合中に落ち込んでいます。\nお子さまはどう接しますか？',
+    note:'チームの中での役割・共感力を診断します',
+    options:[
+      {label:'「次こそ行こう！」と声をかけてすぐ前を向かせる', icon:'ph-megaphone'},
+      {label:'「大丈夫、一緒に取り返そう」と寄り添う',         icon:'ph-handshake'},
+      {label:'何も言わずプレーで引っ張って見せる',             icon:'ph-soccer-ball'},
+      {label:'普段通り接して気を使わせないようにする',          icon:'ph-smiley'}
     ]
   },
   {
-    id:4, type:'single', text:'サッカーで伸ばしたいことは？', note:'',
+    id:6, type:'single',
+    text:'チームが0対1で負けている。残り5分。\nコーチがベンチからサインを送っています。お子さまはどう動きますか？',
+    note:'鈴木監督が重視する「判断力とゲーム理解」を診断します',
     options:[
-      {label:'技術・テクニック',              icon:'ph-target'},
-      {label:'体力・フィジカル',              icon:'ph-barbell'},
-      {label:'仲間との絆・コミュニケーション', icon:'ph-users-three'},
-      {label:'試合で勝つ・上を目指す',        icon:'ph-crown'}
+      {label:'すぐコーチのサインを確認して仲間に伝える',          icon:'ph-eye'},
+      {label:'サインより自分の判断でゴールを狙いに行く',          icon:'ph-target'},
+      {label:'声を出してチーム全体のテンションを上げる',          icon:'ph-speaker-high'},
+      {label:'ポジションを保ってチームバランスを崩さないようにする', icon:'ph-compass'}
     ]
   },
+
+  // ── 【技①】戦術理解・判断力 ──
   {
-    id:5, type:'single', text:'週何回練習できますか？', note:'',
+    id:7, type:'single',
+    text:'味方のGKがボールを持っています。\nお子さまはどこに動きますか？',
+    note:'サッカーの戦術理解・オフザボールの動きを診断します',
     options:[
-      {label:'週1〜2回',       icon:'ph-calendar'},
-      {label:'週3〜4回',       icon:'ph-calendar-check'},
-      {label:'週5回以上',      icon:'ph-calendar-dots'},
-      {label:'まだ決めていない', icon:'ph-question'}
-    ]
-  },
-  {
-    id:6, type:'single', text:'高校・将来のサッカーについて', note:'',
-    options:[
-      {label:'楽しく続けられればOK',        icon:'ph-smiley'},
-      {label:'高校でもサッカーを続けてほしい', icon:'ph-graduation-cap'},
-      {label:'できれば強豪校・上を目指したい', icon:'ph-star'},
-      {label:'Jリーグ・プロを視野に入れている', icon:'ph-medal'}
-    ]
-  },
-  {
-    id:7, type:'multi',
-    text:'今一番気になることは？',
-    note:'複数選択可（0個でもOK）',
-    options:[
-      {label:'コーチの指導レベル'},
-      {label:'仲間・チームの雰囲気'},
-      {label:'試合・大会の機会'},
-      {label:'施設・グラウンドの環境'},
-      {label:'高校進路のサポート'},
-      {label:'費用・料金'},
-      {label:'練習時間・スケジュール'},
-      {label:'動画分析など最新の育成'}
+      {label:'相手のプレッシャーから逃げてパスコースを作る',      icon:'ph-arrows-out'},
+      {label:'前を向いて受けられる位置にアピールしながら動く',    icon:'ph-person-simple-run'},
+      {label:'GKが判断しやすいようにスペースを空ける',           icon:'ph-squares-four'},
+      {label:'まだそこまで考えながら動けていない',               icon:'ph-question'}
     ]
   },
   {
     id:8, type:'single',
-    text:'好きなプレーはどれ？', note:'',
+    text:'ボールを持った瞬間（またはセーブした瞬間）、\nまず最初にすることは？',
+    note:'試合中の認知・判断プロセスを診断します',
     options:[
-      {label:'ゴールを決めること',             icon:'ph-soccer-ball'},
-      {label:'ドリブルで相手を抜くこと',        icon:'ph-person-simple-run'},
-      {label:'パスをつないでチームを動かすこと', icon:'ph-arrows-split'},
-      {label:'守ってシュートを止めること',       icon:'ph-shield-check'},
-      {label:'声を出してチームをまとめること',   icon:'ph-megaphone'}
+      {label:'受ける前にすでに周りを見て次を決めていた',         icon:'ph-brain'},
+      {label:'ファーストタッチで時間を作りながら確認する',       icon:'ph-clock'},
+      {label:'ボールを止めてから前を向いて状況を判断する',       icon:'ph-eye'},
+      {label:'GKなので素早く配球・ビルドアップを判断する',       icon:'ph-hands-praying'},
+      {label:'仲間の声に頼りながら動く',                         icon:'ph-ear'}
     ]
   },
   {
     id:9, type:'single',
-    text:'試合でどんなとき一番楽しい？', note:'',
+    text:'プレッシャーのかかる局面でどう動きますか？',
+    note:'個人技・判断・ポジショニングのバランスを診断します',
     options:[
-      {label:'点を取ったとき',       icon:'ph-fire'},
-      {label:'ナイスパスが通ったとき', icon:'ph-arrows-left-right'},
-      {label:'相手の攻撃を止めたとき', icon:'ph-shield'},
-      {label:'チームが勝ったとき',    icon:'ph-trophy'}
+      {label:'ドリブルで仕掛けて突破する（FP）',                icon:'ph-person-simple-run'},
+      {label:'素早くパスで回避してリズムを作る（FP）',           icon:'ph-arrows-split'},
+      {label:'ターンして別のコースを探す（FP）',                 icon:'ph-arrows-clockwise'},
+      {label:'GKとして飛び出してシュートコースを消す',           icon:'ph-hands-praying'},
+      {label:'ファウルをもらえる体の使い方で時間を作る（FP）',   icon:'ph-shield-check'}
     ]
   },
+
+  // ── 【技②】プレースタイル ──
   {
     id:10, type:'single',
-    text:'サッカーで今一番悩んでいることは？', note:'',
+    text:'試合で一番「やった！」と感じる瞬間はどれですか？',
+    note:'プレースタイル・本質的な動機を診断します',
     options:[
-      {label:'ドリブルがうまくいかない',   icon:'ph-person-simple-run'},
-      {label:'シュートが入らない',         icon:'ph-soccer-ball'},
-      {label:'試合で緊張してしまう',       icon:'ph-heartbeat'},
-      {label:'仲間とうまく連携できない',   icon:'ph-users-three'},
-      {label:'まだ始めたばかりでわからない', icon:'ph-question'}
+      {label:'自分がゴールを決めた瞬間',                  icon:'ph-fire'},
+      {label:'ドリブルで相手を抜き去った瞬間',             icon:'ph-person-simple-run'},
+      {label:'自分のパスで仲間がゴールを決めた瞬間',       icon:'ph-arrows-left-right'},
+      {label:'GKとしてビッグセーブを決めた瞬間',           icon:'ph-hands-praying'},
+      {label:'ピンチをギリギリで守りきった瞬間',           icon:'ph-shield'},
+      {label:'チーム全員で喜びを分かち合えた瞬間',         icon:'ph-users-three'}
     ]
   },
+
+  // ── 【体①】フィジカル特性 ──
   {
     id:11, type:'single',
-    text:'憧れるポジションは？', note:'',
+    text:'お子さまの体の特徴で最も当てはまるのは？',
+    note:'【体】フィジカル特性・伸びしろを診断します',
     options:[
-      {label:'フォワード（点を取る）',        icon:'ph-target'},
-      {label:'ミッドフィルダー（つなぐ・走る）', icon:'ph-compass'},
-      {label:'ディフェンダー（守る・支える）', icon:'ph-shield-check'},
-      {label:'ゴールキーパー（ゴールを守る）', icon:'ph-hands-praying'},
-      {label:'まだわからない',               icon:'ph-question'}
+      {label:'スタートダッシュが速く、瞬間的な動きが得意',    icon:'ph-rocket'},
+      {label:'最後まで走り続けられるスタミナがある',           icon:'ph-heartbeat'},
+      {label:'体が強くあたり負けしない・ボールを奪われにくい', icon:'ph-barbell'},
+      {label:'柔軟性・バランス感覚が優れている',              icon:'ph-person-simple-bike'},
+      {label:'まだ全体的に発展途上でこれから伸ばす段階',       icon:'ph-trend-up'}
     ]
   },
   {
-    id:12, type:'text',
+    id:12, type:'single',
+    text:'ハードな試合・練習の翌日、どうしていますか？',
+    note:'自己管理・ケア意識を診断します',
+    options:[
+      {label:'ストレッチや軽いジョグで体をほぐす',       icon:'ph-person-simple-walk'},
+      {label:'しっかり休んで体を完全回復させる',          icon:'ph-moon'},
+      {label:'食事・睡眠に気をつけてコンディションを整える', icon:'ph-fork-knife'},
+      {label:'特に何もせず次の練習でまた全力でやる',      icon:'ph-lightning'}
+    ]
+  },
+  {
+    id:13, type:'single',
+    text:'週何回、サッカーの練習ができていますか？', note:'',
+    options:[
+      {label:'週1〜2回',        icon:'ph-calendar'},
+      {label:'週3〜4回',        icon:'ph-calendar-check'},
+      {label:'週5回以上',       icon:'ph-calendar-dots'},
+      {label:'まだ始めていない', icon:'ph-question'}
+    ]
+  },
+
+  // ── 【環境】指導・将来 ──
+  {
+    id:14, type:'single',
+    text:'コーチにどんなスタイルで指導してもらいたいですか？',
+    note:'育成環境への適性を診断します',
+    options:[
+      {label:'技術を細かく・丁寧に教えてもらいたい',         icon:'ph-chalkboard-teacher'},
+      {label:'戦術や考え方を一緒に深めてもらいたい',          icon:'ph-brain'},
+      {label:'厳しく追い込んで鍛えてもらいたい',             icon:'ph-barbell'},
+      {label:'自分で考える力を引き出してもらいたい',          icon:'ph-lightbulb'}
+    ]
+  },
+  {
+    id:15, type:'single',
+    text:'高校・将来のサッカーについての目標は？', note:'',
+    options:[
+      {label:'楽しく長くサッカーを続けてほしい',           icon:'ph-smiley'},
+      {label:'高校でもサッカーを続けてほしい',             icon:'ph-graduation-cap'},
+      {label:'強豪校・上のカテゴリーを本気で目指したい',    icon:'ph-star'},
+      {label:'Jリーガー・プロを本気で視野に入れている',     icon:'ph-medal'}
+    ]
+  },
+  {
+    id:16, type:'multi',
+    text:'今のサッカーで当てはまることをすべて選んでください',
+    note:'複数選択可（0個でもOK）',
+    options:[
+      {label:'試合になると練習通りのプレーができなくなる'},
+      {label:'体力・スタミナが課題だと感じている'},
+      {label:'ポジションがまだ定まっていない'},
+      {label:'技術はあるのに試合で力を発揮できない'},
+      {label:'仲間との連携・コミュニケーションが課題'},
+      {label:'高校進路・スカウトについて知りたい'},
+      {label:'動画分析・データを使った育成を受けてみたい'},
+      {label:'もっと試合・大会に出る機会が欲しい'},
+      {label:'メンタルの弱さを克服したい'},
+      {label:'自主練の方法がわからない'}
+    ]
+  },
+  {
+    id:17, type:'text',
     text:'お子さまのお名前（任意）',
     note:'診断結果でお名前を表示します。スキップ可',
     placeholder:'例：たろう'
@@ -1648,42 +1748,65 @@ function getCategory(grade, exp, goal) {
 function calcScore(ans) {
   let s = 18;
   const grade = ans[0] ?? 0, exp = ans[1] ?? 0;
+  // 学年・経験
   if (grade === 0 && exp === 0) s += 20;
   else if (grade <= 1) s += 17;
   else if (grade <= 2) s += 14;
   else s += 10;
-  const g4 = ans[3] ?? 0, g6 = ans[5] ?? 0;
-  const d = Math.abs(g4 - g6);
-  if (d === 0) s += 30; else if (d === 1) s += 22; else if (d === 2) s += 14; else s += 8;
-  const chks = Array.isArray(ans[6]) ? ans[6].length : 0;
-  s += Math.min(chks * 4, 32);
-  return Math.min(Math.max(s, 10), 100);
+  // 将来目標(ans[14]) + 練習頻度(ans[12]) で熱量スコア
+  const goal = ans[14] ?? 0, freq = ans[12] ?? 0;
+  const heat = goal + freq;
+  if (heat >= 5) s += 30; else if (heat >= 3) s += 22; else if (heat >= 2) s += 14; else s += 8;
+  // 課題チェック(ans[15]) は自己認識の高さとして加算
+  const chks = Array.isArray(ans[15]) ? ans[15].length : 0;
+  s += Math.min(chks * 3, 24);
+  return Math.min(Math.max(s, 70), 100);
 }
 
 function getScoreLabel(score) {
-  if (score >= 90) return '今すぐスタートが最適！伸び盛りのタイミングです';
-  if (score >= 70) return '高い適性あり！体験会で確かめてみましょう';
-  if (score >= 50) return '着実に成長できます！焦らずステップアップを';
-  return '小さく始めて楽しさを発見しましょう';
+  if (score >= 95) return '素晴らしい才能の持ち主！今すぐ本格スタートを';
+  if (score >= 85) return '高い可能性あり！体験会でさらに伸ばしましょう';
+  if (score >= 75) return 'しっかりした適性があります！ぜひ体験会へ';
+  return '伸びしろ満点！一緒に才能を開花させましょう';
 }
 
 function calcRadar(ans) {
-  const q3 = ans[2] ?? 0, q4 = ans[3] ?? 0, q5 = ans[4] ?? 0, q6 = ans[5] ?? 0;
-  const v = [60, 60, 60, 60, 60];
-  if (q3===0)      { v[0]+=20; v[2]+=10; }
-  else if (q3===1) { v[0]+=15; v[4]+=15; }
-  else if (q3===2) { v[3]+=20; v[4]+=10; }
-  else             { v[2]+=20; v[1]+=10; }
-  if (q4===0) v[0]+=15; else if (q4===1) v[1]+=15; else if (q4===2) v[3]+=15; else { v[2]+=10; v[4]+=10; }
-  if (q5===1) { v[4]+=12; v[1]+=5; } else if (q5===2) { v[4]+=20; v[1]+=10; } else v[4]+=4;
-  if (q6>=2) { v[2]+=8; v[4]+=8; } else if (q6===1) v[3]+=8;
+  // 新インデックス対応
+  // ans[2]=ポジション, ans[3]=困難時, ans[4]=ミス時, ans[5]=仲間フォロー
+  // ans[10]=フィジカル, ans[12]=練習頻度, ans[14]=将来目標
+  const pos   = ans[2]  ?? 0;
+  const ment1 = ans[3]  ?? 0;
+  const ment2 = ans[4]  ?? 0;
+  const team  = ans[5]  ?? 0;
+  const phys  = ans[10] ?? 0;
+  const freq  = ans[12] ?? 0;
+  const goal  = ans[14] ?? 0;
+  const v = [60, 60, 60, 60, 60]; // テクニック, フィジカル, メンタル, チームワーク, 成長ポテンシャル
+  // ポジションベース
+  if (pos===0)      { v[0]+=20; v[2]+=8;  }  // FW
+  else if (pos===1) { v[0]+=15; v[3]+=15; }  // MF
+  else if (pos===2) { v[3]+=20; v[1]+=10; }  // DF
+  else if (pos===3) { v[2]+=15; v[3]+=12; }  // GK
+  else              { v[4]+=15; }             // わからない
+  // メンタル（困難時）
+  if (ment1===0) v[2]+=15; else if (ment1===2) v[2]+=10; else if (ment1===3) v[2]+=8;
+  // メンタル（ミス時）
+  if (ment2===0) v[2]+=12; else if (ment2===2) v[2]+=8;
+  // チームワーク
+  if (team===0) v[3]+=10; else if (team===1) v[3]+=15;
+  // フィジカル
+  if (phys===0) v[1]+=20; else if (phys===1) v[1]+=15; else if (phys===2) v[1]+=18;
+  // 練習頻度 → 成長ポテンシャル
+  if (freq===2) v[4]+=20; else if (freq===1) v[4]+=12; else v[4]+=4;
+  // 将来目標 → 成長ポテンシャル
+  if (goal>=2) v[4]+=15; else if (goal===1) v[4]+=8;
   return v.map(n => Math.min(n, 100));
 }
 
 // =============================================
 // 状態
 // =============================================
-const TOTAL_Q = QUESTIONS.length; // 12
+const TOTAL_Q = QUESTIONS.length; // 18
 let currentQ    = 0;
 let answers     = Array(TOTAL_Q).fill(null);
 let multiSel    = [];
@@ -1714,6 +1837,7 @@ function startDiagnosis() {
   answers     = Array(TOTAL_Q).fill(null);
   multiSel    = [];
   goingForward = true;
+  document.getElementById('q-total').textContent = TOTAL_Q;
   showScreen('screen-question');
   renderQ('right');
 }
@@ -1834,19 +1958,20 @@ function goBack() {
 // ローディング
 // =============================================
 function runLoading() {
-  const hints = [
+  // ポジション(ans[2]) からヒントを決定 FW=0,MF=1,DF=2,GK=3,わからない=4
+  const posHints = [
     'ファンタジスタ型 の可能性を感知中...',
-    '鉄壁の守護者型 の可能性を感知中...',
     '知将アンカー型 の可能性を感知中...',
+    '鉄壁の守護者型 の可能性を感知中...',
+    '鉄壁の守護者型（GK） の可能性を感知中...',
     '闘将ストライカー型 の可能性を感知中...'
   ];
-  const q3 = answers[2];
-  if (q3 !== null && q3 !== undefined) {
-    setTimeout(() => {
-      document.getElementById('loading-hint').innerHTML =
-        `<span style="color:#FFD700;font-weight:700">${hints[q3]}</span>`;
-    }, 900);
-  }
+  const posH = answers[2] ?? 0;
+  setTimeout(() => {
+    const hint = posHints[Math.min(posH, posHints.length - 1)] ?? posHints[0];
+    document.getElementById('loading-hint').innerHTML =
+      `<span style="color:#FFD700;font-weight:700">${hint}</span>`;
+  }, 900);
 
   const fill = document.getElementById('circ-fill');
   const circumference = 2 * Math.PI * 54;
@@ -1887,8 +2012,17 @@ function buildResult() {
   const name = (answers[TOTAL_Q - 1] || '').trim();
   document.getElementById('result-name').textContent = name ? `${name}さんの診断結果` : '診断結果';
 
-  const q3   = answers[2] ?? 0;
-  const type = TYPE_MAP[q3];
+  // ポジション(ans[2]) → TYPE_MAP: FW=0,MF=1,DF=2,GK=3,わからない=4
+  const posIdx = answers[2] ?? 0;
+  const posTypeMap = [0, 2, 1, 1, -1]; // FW→type0, MF→type2, DF→type1, GK→type1, わからない→-1
+  let typeIdx = posTypeMap[Math.min(posIdx, posTypeMap.length - 1)];
+  if (typeIdx === -1) {
+    // わからない→Q10(やった！ans[9])で判定: ゴール/ドリブル→0, パス→2, GKセーブ/守備→1, チーム→3
+    const joyMap = [0, 0, 2, 1, 1, 3];
+    typeIdx = joyMap[Math.min(answers[9] ?? 0, joyMap.length - 1)];
+  }
+  typeIdx = Math.min(Math.max(typeIdx, 0), TYPE_MAP.length - 1);
+  const type = TYPE_MAP[typeIdx];
   document.getElementById('type-name').textContent = type.name;
   document.getElementById('type-desc').textContent = type.desc;
   document.getElementById('type-icon').className   = `ph-bold ${type.icon}`;
@@ -1897,7 +2031,8 @@ function buildResult() {
   document.getElementById('r-growth').innerHTML =
     type.growth.map(p => `<li><i class="ph-bold ph-caret-right"></i>${p}</li>`).join('');
 
-  const cat = getCategory(answers[0] ?? 0, answers[1] ?? 0, answers[5] ?? 0);
+  // getCategory: 学年(ans[0]), 経験(ans[1]), 将来目標(ans[14])
+  const cat = getCategory(answers[0] ?? 0, answers[1] ?? 0, answers[14] ?? 0);
   document.getElementById('r-cat').textContent      = cat.name;
   document.getElementById('r-cat-desc').textContent = cat.desc;
 
@@ -1933,13 +2068,14 @@ function animateScore(target) {
     gauge.style.strokeDashoffset = arcLen - (arcLen * eased * target / 100);
     if (progress < 1) {
       requestAnimationFrame(step);
-    } else {
-      setTimeout(() => {
-        document.getElementById('gauge-num').style.filter  = 'blur(14px)';
-        document.getElementById('score-msg').style.filter  = 'blur(8px)';
-        document.getElementById('score-lock').classList.add('show');
-      }, 1200);
     }
+    // ※ LINE連携完成後にblurロックを再有効化する
+    // setTimeout(() => {
+    //   document.getElementById('gauge-num').style.filter  = 'blur(14px)';
+    //   document.getElementById('score-msg').style.filter  = 'blur(8px)';
+    //   document.getElementById('gauge-fill').style.opacity = '0.08';
+    //   document.getElementById('score-lock').classList.add('show');
+    // }, 1200);
   }
   requestAnimationFrame(step);
 }
@@ -1950,7 +2086,7 @@ function renderRadar(data) {
   chartInst = new Chart(ctx, {
     type: 'radar',
     data: {
-      labels: ['テクニック\n適性','フィジカル\n適性','メンタル\n強さ','チーム\nワーク','成長\nポテンシャル'],
+      labels: ['テクニック適性','フィジカル適性','メンタル強さ','チームワーク','成長ポテンシャル'],
       datasets: [{
         data: data,
         backgroundColor: 'rgba(255,215,0,0.14)',
@@ -1975,7 +2111,7 @@ function renderRadar(data) {
           ticks: { stepSize: 20, display: false },
           grid: { color: 'rgba(168,192,214,0.12)' },
           angleLines: { color: 'rgba(168,192,214,0.12)' },
-          pointLabels: { color: '#A8C0D6', font: { size: 11, family:"'Noto Sans JP',sans-serif" } }
+          pointLabels: { color: '#A8C0D6', font: { size: 10, family:"'Noto Sans JP',sans-serif" }, padding: 8 }
         }
       }
     }
