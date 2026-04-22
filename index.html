@@ -202,9 +202,13 @@
     @media (max-width: 720px) { .ach-line { font-size: 26px; } }
 
     /* Photo elements */
-    /* デスクトップ：sup-topは透過（flex子として直接扱う） */
+    /* デスクトップ：sup-topは写真＋テキストのflexrow */
     .sup-top {
-      display: contents;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      flex: 1;
+      min-width: 0;
     }
     .sup-photo {
       height: 160px;
@@ -216,14 +220,14 @@
       margin-top: -50px;
       align-self: flex-end;
     }
-    /* モバイル：sup-topがrow、写真が絶対配置で帯いっぱいに */
+    /* モバイル：写真を絶対配置で帯の上から下までフィット */
     @media (max-width: 720px) {
       .sup-top {
-        display: flex;
-        flex-direction: row;
         position: relative;
         overflow: hidden;
-        flex: 1 1 100%;
+        align-items: stretch;
+        flex: none;
+        width: 100%;
       }
       .sup-photo {
         position: absolute;
@@ -328,7 +332,6 @@
       display: flex;
       align-items: center;
       gap: 0;
-      flex-wrap: wrap;
       overflow: visible;
       position: relative;
     }
