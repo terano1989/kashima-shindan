@@ -902,6 +902,42 @@
     .type-name-txt { font-size:24px; font-weight:900; line-height:1.3; margin-bottom:8px; }
     .type-desc-txt { font-size:13px; color:rgba(184,208,240,1); line-height:1.8; }
 
+    /* 指導者適性バッジ */
+    .leader-badge-wrap {
+      margin-top:16px;
+      background: linear-gradient(135deg, rgba(255,215,0,0.08) 0%, rgba(255,255,255,0.05) 100%);
+      border: 1px solid rgba(255,215,0,0.25);
+      border-radius: 14px;
+      padding: 14px 16px 12px;
+      text-align: left;
+    }
+    .leader-badge-label {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 11px; font-weight: 700; color: var(--gold);
+      letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px;
+    }
+    .leader-bar-row {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
+    }
+    .leader-bar-bg {
+      flex: 1; height: 8px; background: rgba(255,255,255,0.1);
+      border-radius: 4px; overflow: hidden;
+    }
+    .leader-bar-fill {
+      height: 100%; width: 0%; border-radius: 4px;
+      background: linear-gradient(90deg, #FFD700, #ffe866);
+      transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+    }
+    .leader-score-num {
+      font-size: 18px; font-weight: 900; color: var(--gold);
+      min-width: 36px; text-align: right; line-height: 1;
+    }
+    .leader-level-row {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .leader-stars { font-size: 13px; letter-spacing: 2px; color: var(--gold); }
+    .leader-level-txt { font-size: 11px; color: rgba(184,208,240,0.8); font-weight: 600; }
+
     .r-card { margin-bottom:14px; }
     .r-card-ttl { font-size:12px; font-weight:700; color:rgba(184,208,240,1); margin-bottom:14px; text-align:center; letter-spacing:0.06em; display:flex; align-items:center; justify-content:center; gap:6px; }
     .chart-wrap { max-width:270px; margin:0 auto; }
@@ -1371,6 +1407,22 @@
         </div>
         <div class="type-name-txt" id="type-name"></div>
         <div class="type-desc-txt" id="type-desc"></div>
+        <div class="leader-badge-wrap" id="leader-badge-wrap">
+          <div class="leader-badge-label">
+            <i class="ph-bold ph-graduation-cap" style="font-size:14px"></i>
+            指導者適性
+          </div>
+          <div class="leader-bar-row">
+            <div class="leader-bar-bg">
+              <div class="leader-bar-fill" id="leader-bar-fill"></div>
+            </div>
+            <div class="leader-score-num" id="leader-score-num">0</div>
+          </div>
+          <div class="leader-level-row">
+            <span class="leader-stars" id="leader-stars">★☆☆</span>
+            <span class="leader-level-txt" id="leader-level-txt">基礎レベル</span>
+          </div>
+        </div>
       </div>
 
       <div class="glass-card r-card reveal">
@@ -1816,6 +1868,33 @@ function calcScore(ans) {
   return Math.min(Math.max(s, 70), 100);
 }
 
+function calcLeadership(ans) {
+  let l = 20;
+  // 仲間フォロー(ans[5]): 声かけ(0)→+20, 寄り添い(1)→+18, プレーで引っ張る(2)→+10
+  const team = ans[5] ?? -1;
+  if (team===0) l+=20; else if (team===1) l+=18; else if (team===2) l+=10; else l+=6;
+  // 残り5分の指示場面(ans[6]): サインを仲間に伝える(0)→+22, 声出しテンション(2)→+16, ポジションキープ(3)→+10
+  const cmd = ans[6] ?? -1;
+  if (cmd===0) l+=22; else if (cmd===2) l+=16; else if (cmd===3) l+=10; else l+=6;
+  // ミス繰り返し(ans[4]): 自分で原因考える(0)→+18, 仲間/コーチに聞く(1)→+14
+  const rec = ans[4] ?? -1;
+  if (rec===0) l+=18; else if (rec===1) l+=14; else l+=8;
+  // コーチスタイル希望(ans[13]): 自分で考える力(3)→+18, 戦術理解(1)→+12, 丁寧に教える(0)→+8
+  const cst = ans[13] ?? -1;
+  if (cst===3) l+=18; else if (cst===1) l+=12; else if (cst===0) l+=8; else l+=6;
+  // 課題multi(ans[15]): 仲間連携(index4)→+8, 動画分析(index6)→+6
+  const chks = Array.isArray(ans[15]) ? ans[15] : [];
+  if (chks.includes(4)) l+=8;
+  if (chks.includes(6)) l+=6;
+  return Math.min(Math.max(l, 70), 100);
+}
+
+function getLeadershipLabel(score) {
+  if (score >= 90) return { level:'高い適性', star:'★★★', color:'#FFD700' };
+  if (score >= 80) return { level:'発展レベル', star:'★★☆', color:'#a8d8ff' };
+  return { level:'基礎レベル', star:'★☆☆', color:'rgba(255,255,255,0.55)' };
+}
+
 function getScoreLabel(score) {
   if (score >= 95) return '素晴らしい才能の持ち主！今すぐ本格スタートを';
   if (score >= 85) return '高い可能性あり！体験会でさらに伸ばしましょう';
@@ -2094,6 +2173,17 @@ function buildResult() {
 
   renderRadar(calcRadar(answers));
   animateScore(score);
+
+  // 指導者適性
+  const lScore = calcLeadership(answers);
+  const lInfo  = getLeadershipLabel(lScore);
+  document.getElementById('leader-score-num').textContent = lScore;
+  document.getElementById('leader-stars').textContent     = lInfo.star;
+  document.getElementById('leader-stars').style.color     = lInfo.color;
+  document.getElementById('leader-level-txt').textContent = lInfo.level;
+  setTimeout(() => {
+    document.getElementById('leader-bar-fill').style.width = (lScore) + '%';
+  }, 400);
 }
 
 function revealResult() {
