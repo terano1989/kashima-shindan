@@ -43,9 +43,10 @@
     /* Header */
     .lp-header {
       background: var(--navy);
-      padding: 14px 32px;
+      padding: 8px 32px;
       display: flex;
       align-items: center;
+      justify-content: center;
       border-bottom: 1px solid rgba(255,255,255,0.07);
       position: sticky;
       top: 0;
@@ -77,6 +78,11 @@
     }
     @media (max-width: 720px) {
       .hero-section { grid-template-columns: 1fr; }
+      .hero-left { display: none; }
+      .hero-right {
+        min-height: 55vw;
+        background: url('img/hero-top.png') center top / cover no-repeat;
+      }
     }
 
     .hero-left {
@@ -644,7 +650,10 @@
       align-items: center;
     }
     @media (max-width: 900px) {
-      .method-section { grid-template-columns: 1fr; padding: 48px 24px; }
+      .method-section { grid-template-columns: 1fr; padding: 48px 24px; text-align: center; }
+      .method-tag { justify-content: center; }
+      .method-btn { margin: 0 auto; }
+      .mf-item { justify-content: center; }
     }
 
     .method-tag {
@@ -1314,7 +1323,7 @@
   <!-- Header -->
   <header class="lp-header">
     <div class="lp-logo">
-      <img src="img/logo.png" alt="KASHIMA Academy" style="height:60px;width:auto;display:block;filter:brightness(0) invert(1);">
+      <img src="img/logo.png" alt="KASHIMA Academy" style="height:56px;width:auto;display:block;filter:brightness(0) invert(1);">
     </div>
   </header>
 
