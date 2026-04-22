@@ -201,43 +201,7 @@
     .ach-line.gold { color: var(--gold); }
     @media (max-width: 720px) { .ach-line { font-size: 26px; } }
 
-    /* Photo elements */
-    /* デスクトップ：sup-topは自然幅のflex行 */
-    .sup-top {
-      display: flex;
-      flex-direction: row;
-      align-items: flex-end;
-      flex-shrink: 0;
-    }
-    .sup-photo {
-      height: 160px;
-      width: auto;
-      object-fit: contain;
-      object-position: bottom center;
-      flex-shrink: 0;
-      display: block;
-      margin-top: -50px;
-      align-self: flex-end;
-    }
-    /* モバイル：写真を絶対配置で帯の上から下までフィット */
-    @media (max-width: 720px) {
-      .sup-top {
-        position: relative;
-        overflow: hidden;
-        align-items: stretch;
-        width: 100%;
-      }
-      .sup-photo {
-        position: absolute;
-        left: 0; top: 0; bottom: 0;
-        width: 110px;
-        height: 100%;
-        margin-top: 0;
-        object-fit: cover;
-        object-position: top center;
-        align-self: auto;
-      }
-    }
+    /* Photo elements — sup-topラッパーなし、sup-stripをGridで管理 */
     /* 写真ラッパー：カード下部に全幅配置 */
     /* 旧クラス（未使用・削除済み） */
     .tc-photo-wrap { display: none; }
@@ -321,43 +285,108 @@
     }
     @media (max-width: 720px) { .hero-ball-deco { display:none; } }
 
-    /* Supervisor strip */
+    /* ============================================================
+       Supervisor strip — CSS Grid redesign
+       Desktop: [photo] [body 1fr] [divider 1px] [stats auto]
+       Mobile:  [photo 110px] [body 1fr] / [stats full-width]
+    ============================================================ */
     .sup-strip {
       background: linear-gradient(135deg, #0b1a3a 0%, #0f2248 60%, #0d1e40 100%);
       border-top: 1px solid rgba(255,215,0,0.3);
       border-bottom: 1px solid rgba(255,215,0,0.15);
-      padding: 0 48px 0 0;
-      display: flex;
-      align-items: center;
-      gap: 0;
-      overflow: visible;
       position: relative;
+      overflow: hidden;
+      /* Desktop grid */
+      display: grid;
+      grid-template-columns: auto 1fr 1px auto;
+      grid-template-areas: "photo body div stats";
+      align-items: center;
     }
     .sup-strip::before {
       content: '';
       position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
+      inset: 0;
       background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23FFD700' fill-opacity='0.025'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
       pointer-events: none;
     }
-    @media (max-width: 720px) {
-      .sup-strip {
-        padding: 0;
-        flex-direction: column;
-        overflow: hidden;
-        gap: 0;
-      }
+
+    /* 監督写真 — デスクトップ */
+    .sup-photo {
+      grid-area: photo;
+      display: block;
+      height: 165px;
+      width: auto;
+      object-fit: contain;
+      object-position: bottom center;
+      align-self: flex-end;
+      margin-top: -50px;
+      flex-shrink: 0;
     }
 
+    /* テキストエリア */
     .sup-body {
+      grid-area: body;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      padding: 22px 32px 22px 4px;
-      min-width: 200px;
-      max-width: 320px;
+      padding: 22px 24px 22px 12px;
     }
-    @media (max-width: 720px) { .sup-body { padding: 16px 16px 16px 120px; min-width: 0; max-width: none; flex: 1; } }
+
+    /* 区切り線 */
+    .sup-divider {
+      grid-area: div;
+      align-self: stretch;
+      background: rgba(255,255,255,0.1);
+      margin: 20px 0;
+    }
+
+    /* 実績 */
+    .sup-stats {
+      grid-area: stats;
+      display: flex;
+      gap: 28px;
+      align-items: center;
+      padding: 20px 48px 20px 32px;
+    }
+
+    /* モバイル */
+    @media (max-width: 720px) {
+      .sup-strip {
+        grid-template-columns: 110px 1fr;
+        grid-template-rows: auto auto;
+        grid-template-areas:
+          "photo body"
+          "stats stats";
+        align-items: stretch;
+      }
+
+      .sup-photo {
+        grid-area: photo;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: top center;
+        align-self: stretch;
+        margin-top: 0;
+      }
+
+      .sup-body {
+        grid-area: body;
+        padding: 16px 14px 16px 14px;
+        align-self: center;
+      }
+
+      .sup-divider { display: none; }
+
+      .sup-stats {
+        grid-area: stats;
+        gap: 0;
+        padding: 14px 0;
+        justify-content: space-around;
+        border-top: 1px solid rgba(255,255,255,0.08);
+        background: rgba(0,0,0,0.12);
+      }
+    }
 
     .sup-credential {
       display: inline-flex; align-items: center; gap: 6px;
@@ -394,24 +423,6 @@
     }
     @media (max-width: 720px) { .sup-sig { font-size: 13px; } }
 
-    .sup-divider {
-      width: 1px; align-self: stretch; background: rgba(255,255,255,0.1); margin: 20px 0;
-    }
-    @media (max-width: 720px) { .sup-divider { display: none; } }
-
-    .sup-stats { display: flex; gap: 24px; flex-wrap: wrap; align-items: center; padding: 20px 0 20px 36px; }
-    @media (max-width: 720px) {
-      .sup-stats {
-        display: flex;
-        width: 100%;
-        gap: 0;
-        padding: 14px 0;
-        justify-content: space-around;
-        border-top: 1px solid rgba(255,255,255,0.08);
-        background: rgba(0,0,0,0.12);
-        flex-wrap: nowrap;
-      }
-    }
     .sup-stat { text-align: center; min-width: 72px; }
     .sup-stat i { font-size: 20px; color: var(--gold); display: block; margin-bottom: 6px; }
     @media (max-width: 720px) {
@@ -1322,17 +1333,15 @@
 
   <!-- Supervisor strip -->
   <div class="sup-strip">
-    <div class="sup-top">
-      <img src="img/supervisor.png" class="sup-photo" alt="監督">
-      <div class="sup-body">
-        <div class="sup-credential">監修</div>
-        <div class="sup-name">鹿島学園高校サッカー部<br><strong>鈴木 監督</strong></div>
-        <div class="sup-quote">
-          <span class="sup-quote-bar"></span>
-          「自分のことを、自分の言葉で<br>語れる選手になってほしい。」
-        </div>
-        <div class="sup-sig">Suzuki</div>
+    <img src="img/supervisor.png" class="sup-photo" alt="監督">
+    <div class="sup-body">
+      <div class="sup-credential">監修</div>
+      <div class="sup-name">鹿島学園高校サッカー部<br><strong>鈴木 監督</strong></div>
+      <div class="sup-quote">
+        <span class="sup-quote-bar"></span>
+        「自分のことを、自分の言葉で<br>語れる選手になってほしい。」
       </div>
+      <div class="sup-sig">Suzuki</div>
     </div>
     <div class="sup-divider"></div>
     <div class="sup-stats">
