@@ -202,8 +202,8 @@
     @media (max-width: 720px) { .ach-line { font-size: 26px; } }
 
     /* Photo elements */
-    /* デスクトップ：ラッパーを透過してimgを直接flex子として扱う */
-    .sup-photo-mob-wrap {
+    /* デスクトップ：sup-topは透過（flex子として直接扱う） */
+    .sup-top {
       display: contents;
     }
     .sup-photo {
@@ -216,21 +216,24 @@
       margin-top: -50px;
       align-self: flex-end;
     }
-    /* モバイル：ラッパーでストレッチ → imgが100%高さで充填 */
+    /* モバイル：sup-topがrow、写真が絶対配置で帯いっぱいに */
     @media (max-width: 720px) {
-      .sup-photo-mob-wrap {
+      .sup-top {
         display: flex;
-        align-self: stretch;
-        flex-shrink: 0;
+        flex-direction: row;
+        position: relative;
         overflow: hidden;
+        flex: 1 1 100%;
       }
       .sup-photo {
+        position: absolute;
+        left: 0; top: 0; bottom: 0;
         height: 100%;
         width: auto;
         margin-top: 0;
-        align-self: auto;
         object-fit: contain;
-        object-position: top center;
+        object-position: top left;
+        align-self: auto;
       }
     }
     /* 写真ラッパー：カード下部に全幅配置 */
@@ -339,8 +342,7 @@
     @media (max-width: 720px) {
       .sup-strip {
         padding: 0;
-        flex-wrap: wrap;
-        align-items: flex-end;
+        flex-direction: column;
         overflow: hidden;
         gap: 0;
       }
@@ -354,7 +356,7 @@
       flex: 1;
       min-width: 220px;
     }
-    @media (max-width: 720px) { .sup-body { padding: 16px 16px 16px 8px; min-width: 0; flex: 1; min-height: 185px; } }
+    @media (max-width: 720px) { .sup-body { padding: 16px 16px 16px 115px; min-width: 0; flex: 1; } }
 
     .sup-credential {
       display: inline-flex; align-items: center; gap: 6px;
@@ -1319,15 +1321,17 @@
 
   <!-- Supervisor strip -->
   <div class="sup-strip">
-    <div class="sup-photo-mob-wrap"><img src="img/supervisor.png" class="sup-photo" alt="監督"></div>
-    <div class="sup-body">
-      <div class="sup-credential">監修</div>
-      <div class="sup-name">鹿島学園高校サッカー部<br><strong>鈴木 監督</strong></div>
-      <div class="sup-quote">
-        <span class="sup-quote-bar"></span>
-        「自分のことを、自分の言葉で<br>語れる選手になってほしい。」
+    <div class="sup-top">
+      <img src="img/supervisor.png" class="sup-photo" alt="監督">
+      <div class="sup-body">
+        <div class="sup-credential">監修</div>
+        <div class="sup-name">鹿島学園高校サッカー部<br><strong>鈴木 監督</strong></div>
+        <div class="sup-quote">
+          <span class="sup-quote-bar"></span>
+          「自分のことを、自分の言葉で<br>語れる選手になってほしい。」
+        </div>
+        <div class="sup-sig">Suzuki</div>
       </div>
-      <div class="sup-sig">Suzuki</div>
     </div>
     <div class="sup-divider"></div>
     <div class="sup-stats">
