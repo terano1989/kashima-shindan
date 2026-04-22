@@ -1991,30 +1991,70 @@ function calcScore(ans) {
 }
 
 function calcLeadership(ans) {
-  let l = 20;
-  // 仲間フォロー(ans[5]): 声かけ(0)→+20, 寄り添い(1)→+18, プレーで引っ張る(2)→+10
-  const team = ans[5] ?? -1;
-  if (team===0) l+=20; else if (team===1) l+=18; else if (team===2) l+=10; else l+=6;
-  // 残り5分の指示場面(ans[6]): サインを仲間に伝える(0)→+22, 声出しテンション(2)→+16, ポジションキープ(3)→+10
+  // 0〜100点。70点未満は表示なし。
+  // 18問すべての回答から10軸で評価。max理論値≒126→100でキャップ。
+  let l = 0;
+
+  // ① 共感・声かけ力：仲間フォロー ans[5] (max 18)
+  // 0=声かけ前向かせる, 1=寄り添う, 2=プレーで引っ張る, 3=普通に接する
+  const care = ans[5] ?? -1;
+  l += care===0 ? 18 : care===1 ? 16 : care===2 ? 7 : care===3 ? 2 : 0;
+
+  // ② 指示・チーム判断力：残り5分の行動 ans[6] (max 18)
+  // 0=サイン仲間に伝える, 1=自分でゴール, 2=テンション上げ, 3=ポジション保つ
   const cmd = ans[6] ?? -1;
-  if (cmd===0) l+=22; else if (cmd===2) l+=16; else if (cmd===3) l+=10; else l+=6;
-  // ミス繰り返し(ans[4]): 自分で原因考える(0)→+18, 仲間/コーチに聞く(1)→+14
+  l += cmd===0 ? 18 : cmd===2 ? 14 : cmd===3 ? 10 : cmd===1 ? 2 : 0;
+
+  // ③ 自己分析・学習姿勢：同じミス3回後 ans[4] (max 16)
+  // 0=原因を自分で考える, 1=コーチ仲間に聞く, 2=やり続ける, 3=切り替える
   const rec = ans[4] ?? -1;
-  if (rec===0) l+=18; else if (rec===1) l+=14; else l+=8;
-  // コーチスタイル希望(ans[13]): 自分で考える力(3)→+18, 戦術理解(1)→+12, 丁寧に教える(0)→+8
-  const cst = ans[13] ?? -1;
-  if (cst===3) l+=18; else if (cst===1) l+=12; else if (cst===0) l+=8; else l+=6;
-  // 課題multi(ans[15]): 仲間連携(index4)→+8, 動画分析(index6)→+6
-  const chks = Array.isArray(ans[15]) ? ans[15] : [];
-  if (chks.includes(4)) l+=8;
-  if (chks.includes(6)) l+=6;
-  return Math.min(Math.max(l, 70), 100);
+  l += rec===0 ? 16 : rec===1 ? 14 : rec===2 ? 7 : rec===3 ? 4 : 0;
+
+  // ④ 先読み・認知力：ボール受けた瞬間の行動 ans[8] (max 16)
+  // 0=受ける前にすでに見ていた, 1=ファーストタッチで時間作る, 2=止めてから判断, 3=GKビルドアップ, 4=仲間の声頼り
+  const cog = ans[8] ?? -1;
+  l += cog===0 ? 16 : cog===3 ? 13 : cog===1 ? 10 : cog===2 ? 7 : cog===4 ? 2 : 0;
+
+  // ⑤ チームワーク・動機軸：やった！瞬間 ans[10] (max 15)
+  // 0=自分ゴール, 1=ドリブル, 2=パスで仲間ゴール, 3=GKセーブ, 4=守りきった, 5=チーム全員で喜ぶ
+  const joy = ans[10] ?? -1;
+  l += joy===5 ? 15 : joy===2 ? 13 : joy===3 ? 9 : joy===4 ? 8 : (joy===0||joy===1) ? 3 : 0;
+
+  // ⑥ 指導受容・戦術志向：コーチスタイル希望 ans[14] (max 14)
+  // 0=技術丁寧, 1=戦術一緒に, 2=厳しく, 3=自分で考える力を引き出す
+  const cst = ans[14] ?? -1;
+  l += cst===3 ? 14 : cst===1 ? 11 : cst===0 ? 7 : cst===2 ? 5 : 0;
+
+  // ⑦ オフザボール思考：GKボール時の動き ans[7] (max 10)
+  // 0=パスコース作る, 1=アピールして受ける, 2=スペース空ける, 3=まだ考えられない
+  const off = ans[7] ?? -1;
+  l += (off===0||off===2) ? 10 : off===1 ? 4 : off===3 ? 1 : 0;
+
+  // ⑧ 逆境メンタル：大事な場面シュート外した後 ans[3] (max 8)
+  // 0=切り替え, 1=エネルギーに変える, 2=落ち着いて整理する, 3=仲間に話す
+  const ment = ans[3] ?? -1;
+  l += ment===2 ? 8 : ment===0 ? 6 : ment===3 ? 5 : ment===1 ? 4 : 0;
+
+  // ⑨ 自己管理・継続力：練習翌日の行動 ans[12] (max 7)
+  // 0=ストレッチ, 1=完全回復, 2=食事睡眠管理, 3=何もしない
+  const self = ans[12] ?? -1;
+  l += self===2 ? 7 : self===0 ? 5 : self===1 ? 4 : self===3 ? 1 : 0;
+
+  // ⑩ 課題認識の深さ：multi ans[16] (bonus max 8)
+  // index4=仲間連携コミュ, index6=動画分析, index8=メンタル克服
+  const chks = Array.isArray(ans[16]) ? ans[16] : [];
+  if (chks.includes(4)) l += 4; // チーム思考の自覚
+  if (chks.includes(6)) l += 4; // 分析志向
+  if (chks.includes(8)) l += 2; // 自己改善意識
+  if (chks.includes(5)) l += 2; // 将来を見据えている
+
+  return Math.min(l, 100); // 70未満は演出なし、70以上のみ表示
 }
 
 function getLeadershipLabel(score) {
-  if (score >= 90) return { level:'高い適性', star:'★★★', color:'#FFD700' };
-  if (score >= 80) return { level:'発展レベル', star:'★★☆', color:'#a8d8ff' };
-  return { level:'基礎レベル', star:'★☆☆', color:'rgba(255,255,255,0.55)' };
+  if (score >= 90) return { level:'突出した適性', star:'★★★', color:'#FFD700' };
+  if (score >= 80) return { level:'高い適性あり', star:'★★☆', color:'#a8d8ff' };
+  return { level:'適性の芽あり',  star:'★☆☆', color:'rgba(255,255,255,0.65)' };
 }
 
 function getScoreLabel(score) {
@@ -2296,53 +2336,53 @@ function buildResult() {
   renderRadar(calcRadar(answers));
   animateScore(score);
 
-  // 指導者適性 — ドラマチック演出（メイン結果から2.8秒後に起動）
+  // 指導者適性 — 70点以上の場合のみドラマチック演出
   const lScore = calcLeadership(answers);
-  const lInfo  = getLeadershipLabel(lScore);
-  const lComments = {
-    high:  'この診断から、プレーだけでなくチームを導く力が強く現れています。仲間を動かす言葉・戦況を読む眼・失敗を糧にする姿勢。それが高い指導者適性の証です。',
-    mid:   '仲間への声かけや戦術への関心が光ります。その感性をさらに伸ばせば、チームを引っ張るキャプテンシップが開花するでしょう。',
-    base:  '仲間を思いやる素直さと学ぶ姿勢がしっかり見えます。経験を重ねるほど、リーダーとしての芽が育っていくタイプです。'
-  };
-  const lComment = lScore >= 90 ? lComments.high : lScore >= 80 ? lComments.mid : lComments.base;
+  if (lScore >= 70) {
+    const lInfo  = getLeadershipLabel(lScore);
+    const lComments = {
+      high: 'この診断から、プレーの枠を超えた才能が現れています。仲間を動かす言葉・戦況を読む眼・失敗を糧にする姿勢。すべてが高い指導者適性の証です。将来、チームの核になる器があります。',
+      mid:  '仲間への声かけの自然さ・戦術への好奇心・分析する頭の使い方。それが指導者適性として数値に現れました。キャプテンシップの芽は、着実に育っています。',
+      base: '仲間を思いやる素直さと、学ぶ姿勢の誠実さ。この診断から、リーダーとしての原石が見えてきました。経験を積むほど、その芽は大きく花開くでしょう。'
+    };
+    const lComment = lScore >= 90 ? lComments.high : lScore >= 80 ? lComments.mid : lComments.base;
 
-  setTimeout(() => {
-    const wrap = document.getElementById('leader-reveal-wrap');
-    wrap.style.opacity = '1';
-    wrap.style.pointerEvents = 'auto';
-
-    // タイプライター演出
-    const twEl  = document.getElementById('leader-typewriter');
-    const msg   = '— 実は、もう一つ才能が見つかりました —';
-    let   idx   = 0;
-    const timer = setInterval(() => {
-      twEl.textContent = msg.slice(0, ++idx);
-      if (idx >= msg.length) { clearInterval(timer); twEl.classList.add('done'); }
-    }, 50);
-
-    // カード登場（タイプライター完了後）
     setTimeout(() => {
-      const card = document.getElementById('leader-card');
-      document.getElementById('leader-score-num').textContent = lScore;
-      document.getElementById('leader-stars').textContent     = lInfo.star;
-      document.getElementById('leader-stars').style.color     = lInfo.color;
-      document.getElementById('leader-level-txt').textContent = lInfo.level;
-      document.getElementById('leader-comment').textContent   = lComment;
-      card.classList.add('pop');
+      const wrap = document.getElementById('leader-reveal-wrap');
+      wrap.style.opacity = '1';
+      wrap.style.pointerEvents = 'auto';
 
-      // アイコンスピン
+      // タイプライター演出
+      const twEl = document.getElementById('leader-typewriter');
+      const msg  = '— 実は、もう一つ才能が見つかりました —';
+      let   idx  = 0;
+      const timer = setInterval(() => {
+        twEl.textContent = msg.slice(0, ++idx);
+        if (idx >= msg.length) { clearInterval(timer); twEl.classList.add('done'); }
+      }, 48);
+
+      // カード登場（タイプライター完了後）
       setTimeout(() => {
-        document.getElementById('leader-icon-ring').classList.add('spin');
-      }, 150);
+        const card = document.getElementById('leader-card');
+        document.getElementById('leader-score-num').textContent = lScore;
+        document.getElementById('leader-stars').textContent     = lInfo.star;
+        document.getElementById('leader-stars').style.color     = lInfo.color;
+        document.getElementById('leader-level-txt').textContent = lInfo.level;
+        document.getElementById('leader-comment').textContent   = lComment;
+        card.classList.add('pop');
 
-      // スコアバー流れ込み
-      setTimeout(() => {
-        document.getElementById('leader-bar-fill').style.width = lScore + '%';
-      }, 400);
+        setTimeout(() => {
+          document.getElementById('leader-icon-ring').classList.add('spin');
+        }, 150);
 
-    }, msg.length * 50 + 200);
+        setTimeout(() => {
+          document.getElementById('leader-bar-fill').style.width = lScore + '%';
+        }, 400);
 
-  }, 2800);
+      }, msg.length * 48 + 200);
+
+    }, 2800);
+  }
 }
 
 function revealResult() {
