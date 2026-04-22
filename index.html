@@ -1689,6 +1689,7 @@
       </div>
 
       <div class="score-card reveal">
+        <div class="review-lock-badge"><i class="ph-bold ph-line-logo" style="font-size:11px"></i> LINE登録後に解除</div>
         <div class="score-top">
           <i class="ph-bold ph-target" style="font-size:16px;color:#FFD700"></i>
           <span class="score-top-lbl">適性スコア</span>
@@ -1709,17 +1710,26 @@
         </div>
       </div>
 
-      <!-- 指導者適性が出ない時の代替：監督メッセージ -->
-      <div class="coach-msg-card reveal" id="coach-msg-card" style="display:none">
-        <div class="coach-msg-header">
-          <img src="img/supervisor.png" class="coach-msg-photo" alt="鈴木監督">
-          <div>
-            <div class="coach-msg-from">鈴木監督より</div>
-            <div class="coach-msg-name">鹿島学園高校サッカー部</div>
+      <!-- 鈴木監督のコメント（常に表示・LINE登録後解除） -->
+      <div class="blur-card reveal" id="coach-msg-card" style="display:none">
+        <div class="review-lock-badge"><i class="ph-bold ph-line-logo" style="font-size:11px"></i> LINE登録後に解除</div>
+        <div class="blur-inner">
+          <div class="coach-msg-card" style="background:none;border:none;padding:0;margin:0">
+            <div class="coach-msg-header">
+              <img src="img/supervisor.png" class="coach-msg-photo" alt="鈴木監督">
+              <div>
+                <div class="coach-msg-from">鈴木監督より</div>
+                <div class="coach-msg-name">カシマアカデミーダイレクター</div>
+              </div>
+            </div>
+            <div class="coach-msg-bar"></div>
+            <div class="coach-msg-body" id="coach-msg-body"></div>
           </div>
         </div>
-        <div class="coach-msg-bar"></div>
-        <div class="coach-msg-body" id="coach-msg-body"></div>
+        <div class="blur-overlay">
+          <div class="lock-circle"><i class="ph-bold ph-lock-simple" style="font-size:20px"></i></div>
+          <div class="lock-txt">LINEで確認できます</div>
+        </div>
       </div>
 
       <!-- 指導者適性 ドラマチック演出 -->
@@ -2518,9 +2528,9 @@ function buildResult() {
   renderRadar(calcRadar(answers));
   animateScore(score);
 
-  // 指導者適性 — 70点以上のみ演出、未満は監督メッセージを表示
+  // 鈴木監督コメント — タイプ・スコア帯に関わらず常に表示（LINE登録後解除）
   const lScore = calcLeadership(answers);
-  if (lScore < 70) {
+  {
     // score帯: 0=95以上 / 1=85〜94 / 2=75〜84 / 3=74以下
     const band = score >= 95 ? 0 : score >= 85 ? 1 : score >= 75 ? 2 : 3;
     const coachComments = [
@@ -2642,13 +2652,13 @@ function animateScore(target) {
     if (progress < 1) {
       requestAnimationFrame(step);
     }
-    // ※ LINE連携完成後にblurロックを再有効化する
-    // setTimeout(() => {
-    //   document.getElementById('gauge-num').style.filter  = 'blur(14px)';
-    //   document.getElementById('score-msg').style.filter  = 'blur(8px)';
-    //   document.getElementById('gauge-fill').style.opacity = '0.08';
-    //   document.getElementById('score-lock').classList.add('show');
-    // }, 1200);
+    // 適性スコアblurロック（社内確認モードでは .blur-lock { display:none !important } により非表示）
+    setTimeout(() => {
+      document.getElementById('gauge-num').style.filter  = 'blur(14px)';
+      document.getElementById('score-msg').style.filter  = 'blur(8px)';
+      document.getElementById('gauge-fill').style.opacity = '0.08';
+      document.getElementById('score-lock').classList.add('show');
+    }, 1200);
   }
   requestAnimationFrame(step);
 }
