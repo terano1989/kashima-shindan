@@ -1714,7 +1714,7 @@ const QUESTIONS = [
 
   // ── 基本情報 ──
   {
-    id:1, type:'single', text:'お子さまの学年は？', note:'',
+    id:1, type:'single', text:'お子さまもしくは自分の学年は？', note:'',
     options:[
       {label:'年長・小学1年生',  icon:'ph-baby'},
       {label:'小学2〜3年生',     icon:'ph-person-simple'},
@@ -1750,7 +1750,7 @@ const QUESTIONS = [
   // ── 【心①】メンタル・回復力 ──
   {
     id:4, type:'single',
-    text:'試合で大事な場面にシュートを外してしまいました。\nお子さまはその後どう動きますか？',
+    text:'試合で大事な場面にシュートを外してしまいました。\nどのように行動しますか？',
     note:'鈴木監督が重視する「逆境での自己回復力」を診断します',
     options:[
       {label:'すぐ気持ちを切り替えて次のプレーに集中する',    icon:'ph-lightning'},
@@ -1774,7 +1774,7 @@ const QUESTIONS = [
   // ── 【心②】リーダーシップ・共感力 ──
   {
     id:5, type:'single',
-    text:'仲間がミスして試合中に落ち込んでいます。\nお子さまはどう接しますか？',
+    text:'仲間がミスして試合中に落ち込んでいます。\nどのように接しますか？',
     note:'チームの中での役割・共感力を診断します',
     options:[
       {label:'「次こそ行こう！」と声をかけてすぐ前を向かせる', icon:'ph-megaphone'},
@@ -1785,7 +1785,7 @@ const QUESTIONS = [
   },
   {
     id:6, type:'single',
-    text:'チームが0対1で負けている。残り5分。\nコーチがベンチからサインを送っています。お子さまはどう動きますか？',
+    text:'チームが0対1で負けている。残り5分。\nコーチがベンチからサインを送っています。どのように動きますか？',
     note:'鈴木監督が重視する「判断力とゲーム理解」を診断します',
     options:[
       {label:'すぐコーチのサインを確認して仲間に伝える',          icon:'ph-eye'},
@@ -1798,7 +1798,7 @@ const QUESTIONS = [
   // ── 【技①】戦術理解・判断力 ──
   {
     id:7, type:'single',
-    text:'味方のGKがボールを持っています。\nお子さまはどこに動きますか？',
+    text:'味方のGKがボールを持っています。\nどこに動きますか？',
     note:'サッカーの戦術理解・オフザボールの動きを診断します',
     options:[
       {label:'相手のプレッシャーから逃げてパスコースを作る',      icon:'ph-arrows-out'},
@@ -1850,7 +1850,7 @@ const QUESTIONS = [
   // ── 【体①】フィジカル特性 ──
   {
     id:11, type:'single',
-    text:'お子さまの体の特徴で最も当てはまるのは？',
+    text:'お子さまもしくは自分の体の特徴で最も当てはまるのは？',
     note:'【体】フィジカル特性・伸びしろを診断します',
     options:[
       {label:'スタートダッシュが速く、瞬間的な動きが得意',    icon:'ph-rocket'},
@@ -1923,7 +1923,7 @@ const QUESTIONS = [
   },
   {
     id:17, type:'text',
-    text:'お子さまのお名前（任意）',
+    text:'お子さまもしくは自分のお名前（任意）',
     note:'診断結果でお名前を表示します。スキップ可',
     placeholder:'例：たろう'
   }
@@ -1934,7 +1934,7 @@ const QUESTIONS = [
 // =============================================
 const TYPE_MAP = [
   {
-    name:'🌟 ファンタジスタ型',
+    name:'ファンタジスタ型',
     icon:'ph-star',
     desc:'存在感抜群！目立つことが大好きで、ゴールへの強い意欲を持つタイプ。個の技術で試合を動かす魔術師です。',
     points:[
@@ -1949,7 +1949,7 @@ const TYPE_MAP = [
     ]
   },
   {
-    name:'🛡️ 鉄壁の守護者型',
+    name:'鉄壁の守護者型',
     icon:'ph-shield-check',
     desc:'堅実で誠実。コツコツと努力を続け、チームの守りを支える存在。長期的な成長が最も期待できるタイプです。',
     points:[
@@ -1964,7 +1964,7 @@ const TYPE_MAP = [
     ]
   },
   {
-    name:'🎯 知将アンカー型',
+    name:'知将アンカー型',
     icon:'ph-compass',
     desc:'チームのハートとなるタイプ。仲間を活かす視野の広さと、冷静な状況判断が最大の武器です。',
     points:[
@@ -1979,7 +1979,7 @@ const TYPE_MAP = [
     ]
   },
   {
-    name:'🔥 闘将ストライカー型',
+    name:'闘将ストライカー型',
     icon:'ph-flame',
     desc:'負けん気が強く、競争の中で輝くタイプ。強い精神力と勝利への執念がチームを勝利に導きます。',
     points:[
@@ -1994,7 +1994,7 @@ const TYPE_MAP = [
     ]
   },
   {
-    name:'🧤 守護神GK型',
+    name:'守護神GK型',
     icon:'ph-hands-praying',
     desc:'最後の砦としてチームを守る守護神タイプ。状況判断力・空間認識・コーチング力がずば抜けています。',
     points:[
@@ -2506,7 +2506,7 @@ function renderRadar(data) {
   chartInst = new Chart(ctx, {
     type: 'radar',
     data: {
-      labels: ['テクニック適性','フィジカル適性','メンタル強さ','チームワーク','成長ポテンシャル'],
+      labels: ['テクニック','フィジカル','メンタル','チームワーク','成長力'],
       datasets: [{
         data: data,
         backgroundColor: 'rgba(255,215,0,0.14)',
