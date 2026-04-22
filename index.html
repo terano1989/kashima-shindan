@@ -1,0 +1,1962 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>お子さまのサッカー才能タイプ診断｜カシマアカデミー</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:       #1a2d5a;
+      --navy-dark:  #0f1e3d;
+      --navy-mid:   #1e3670;
+      --gold:       #FFD700;
+      --gold-light: #FFE033;
+      --white:      #FFFFFF;
+      --light-bg:   #F4F6FA;
+      --text-dark:  #1A1A2E;
+      --text-muted: #6B7280;
+      --text-light: #9CA3AF;
+      --blue1:      #FFD700;
+      --muted-lp:   rgba(255,255,255,0.6);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background: var(--navy);
+      color: var(--white);
+    }
+
+    /* ============================================================
+       LP START SCREEN
+    ============================================================ */
+    #screen-start { display: block; width: 100%; }
+
+    /* Header */
+    .lp-header {
+      background: var(--navy);
+      padding: 14px 32px;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .lp-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--white);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+    }
+    .logo-mark {
+      width: 34px; height: 34px;
+      background: var(--gold);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .logo-mark i { font-size: 18px; color: var(--navy); }
+
+    /* Hero */
+    .hero-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 500px;
+      overflow: hidden;
+    }
+    @media (max-width: 720px) {
+      .hero-section { grid-template-columns: 1fr; }
+    }
+
+    .hero-left {
+      background: var(--navy);
+      padding: 56px 48px 56px 48px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    @media (max-width: 960px) { .hero-left { padding: 44px 32px; } }
+    @media (max-width: 720px) { .hero-left { padding: 40px 24px; order: 2; } }
+
+    .hero-tagline {
+      font-size: 13px;
+      color: var(--gold);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      margin-bottom: 14px;
+    }
+    .hero-title {
+      font-size: 34px;
+      font-weight: 900;
+      line-height: 1.35;
+      color: var(--white);
+      margin-bottom: 16px;
+    }
+    .hero-title .accent { color: var(--gold); }
+    @media (max-width: 960px) { .hero-title { font-size: 26px; } }
+    @media (max-width: 480px) { .hero-title { font-size: 22px; } }
+
+    .hero-sub {
+      font-size: 14px;
+      color: var(--muted-lp);
+      line-height: 1.8;
+      margin-bottom: 32px;
+    }
+
+    @keyframes pulse-gold {
+      0%,100% { box-shadow: 0 8px 32px rgba(255,215,0,0.45); }
+      50%      { box-shadow: 0 8px 52px rgba(255,215,0,0.72); }
+    }
+    .hero-cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 18px 32px;
+      background: var(--gold);
+      color: var(--navy);
+      border: none;
+      border-radius: 50px;
+      font-size: 17px;
+      font-weight: 900;
+      font-family: 'Noto Sans JP', sans-serif;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      animation: pulse-gold 2.4s ease-in-out infinite;
+      transition: transform 0.2s;
+      margin-bottom: 14px;
+      max-width: 360px;
+    }
+    .hero-cta:hover { transform: translateY(-2px); }
+    .hero-cta i { font-size: 20px; }
+
+    .hero-info {
+      font-size: 12px;
+      color: rgba(255,255,255,0.4);
+    }
+    .hero-info span { color: rgba(255,255,255,0.6); margin: 0 5px; }
+
+    /* Hero right */
+    .hero-right {
+      background:
+        linear-gradient(90deg, rgba(26,45,90,0.92) 0%, rgba(26,45,90,0.45) 40%, transparent 100%),
+        url('img/hero-top.png') center top / cover no-repeat;
+      position: relative;
+      overflow: hidden;
+      min-height: 400px;
+    }
+    @media (max-width: 720px) { .hero-right { min-height: 240px; order: 1; } }
+
+    .hero-field {
+      position: absolute;
+      inset: 0;
+      opacity: 0.07;
+    }
+    .hero-gold-bar  { position:absolute; top:0; right:70px; width:5px; height:100%; background:var(--gold); opacity:0.8; }
+    .hero-gold-bar2 { position:absolute; top:0; right:82px; width:2.5px; height:100%; background:var(--gold); opacity:0.3; }
+
+    .hero-num {
+      position: absolute;
+      top: 20px; right: 20px;
+      font-size: 130px;
+      font-weight: 900;
+      color: rgba(255,255,255,0.035);
+      line-height: 1;
+      letter-spacing: -0.05em;
+      user-select: none;
+    }
+    .hero-badge-lbl {
+      position: absolute;
+      top: 24px; left: 24px;
+      font-size: 10px;
+      color: rgba(255,255,255,0.3);
+      letter-spacing: 0.14em;
+      font-weight: 700;
+    }
+    .hero-achieve {
+      position: absolute;
+      bottom: 36px; left: 36px;
+    }
+    @media (max-width: 720px) { .hero-achieve { bottom: 20px; left: 20px; } }
+    .ach-line {
+      font-size: 36px;
+      font-weight: 900;
+      color: var(--white);
+      line-height: 1.1;
+      letter-spacing: 0.04em;
+      text-shadow: 0 2px 20px rgba(0,0,0,0.8);
+    }
+    .ach-line.gold { color: var(--gold); }
+    @media (max-width: 720px) { .ach-line { font-size: 26px; } }
+
+    /* Photo elements */
+    .sup-photo {
+      height: 160px;
+      width: auto;
+      object-fit: contain;
+      object-position: bottom center;
+      flex-shrink: 0;
+      display: block;
+      margin-top: -50px;
+      align-self: flex-end;
+    }
+    /* 写真ラッパー：カード下部に全幅配置 */
+    .tc-photo-wrap {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 50%;
+      overflow: hidden;
+      z-index: 0;
+    }
+    .tc-bg-img {
+      width: 100%; height: 115%;
+      object-fit: cover;
+      object-position: top center;
+      opacity: 0.42;
+      filter: grayscale(35%) saturate(0.5);
+      display: block;
+    }
+    /* カラートーンオーバーレイ */
+    .tc-photo-wrap::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    .tc-photo-wrap.tc-col-blue::after   { background: rgba(59,130,246,0.35); }
+    .tc-photo-wrap.tc-col-teal::after   { background: rgba(14,165,233,0.35); }
+    .tc-photo-wrap.tc-col-amber::after  { background: rgba(245,158,11,0.30); }
+    .tc-photo-wrap.tc-col-purple::after { background: rgba(139,92,246,0.35); }
+
+    /* 写真上部→白へのグラデーションフェード */
+    .tc-photo-fade {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 68%;
+      background: linear-gradient(to top, transparent 35%, rgba(255,255,255,0.72) 58%, #fff 76%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Photo gallery */
+    .photo-gallery {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3px;
+      height: 260px;
+      overflow: hidden;
+    }
+    @media (max-width: 720px) { .photo-gallery { height: 160px; } }
+    .gallery-item { overflow: hidden; position: relative; }
+    .gallery-item img {
+      width: 100%; height: 110%;  /* 10%分はみ出させてライセンス文字をクリップ */
+      object-fit: cover;
+      object-position: top center;
+      transition: transform 0.5s ease;
+      display: block;
+    }
+    /* 下部グラデーションでライセンス文字を完全に隠す */
+    .gallery-item::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 28%;
+      background: linear-gradient(to top, rgba(26,45,90,0.85) 0%, transparent 100%);
+      pointer-events: none;
+    }
+    .gallery-item:hover img { transform: scale(1.06); }
+
+    /* Soccer ball illustration */
+    .hero-ball-deco {
+      position: absolute;
+      top: 50%;
+      right: 100px;
+      transform: translateY(-50%);
+      font-size: 140px;
+      color: rgba(255,255,255,0.06);
+    }
+    @media (max-width: 720px) { .hero-ball-deco { display:none; } }
+
+    /* Supervisor strip */
+    .sup-strip {
+      background: var(--navy-dark);
+      border-top: 2px solid rgba(255,215,0,0.25);
+      border-bottom: 2px solid rgba(255,215,0,0.25);
+      padding: 0 48px 0 0;
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      flex-wrap: wrap;
+      overflow: visible;
+    }
+    @media (max-width: 720px) { .sup-strip { padding: 0; flex-direction: column; } }
+
+    .sup-left {
+      display: flex;
+      align-items: flex-end;
+      gap: 20px;
+      flex: 1;
+      min-width: 260px;
+      padding: 0 28px 0 0;
+      border-right: 1px solid rgba(255,255,255,0.08);
+      overflow: visible;
+    }
+    @media (max-width: 720px) { .sup-left { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.08); padding: 16px 20px; } }
+
+    .sup-name-block {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 16px 0;
+    }
+    .sup-name-block .sup-label { font-size: 11px; color: var(--gold); font-weight: 700; display: block; margin-bottom: 4px; letter-spacing: 0.04em; }
+    .sup-name-block .sup-name  { font-size: 15px; color: var(--white); font-weight: 900; line-height: 1.3; }
+    .sup-name-block .sup-desc  { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 4px; line-height: 1.5; }
+    .sup-name-block .sup-sig   { font-family: Georgia, serif; font-style: italic; color: rgba(255,215,0,0.45); font-size: 18px; margin-top: 4px; letter-spacing: 0.04em; }
+
+    .sup-stats { display: flex; gap: 36px; flex-wrap: wrap; align-items: center; padding: 16px 0 16px 28px; }
+    @media (max-width: 720px) { .sup-stats { gap: 24px; padding: 16px 20px; } }
+    .sup-stat { text-align: center; }
+    .sup-stat i { font-size: 18px; color: var(--gold); display: block; margin-bottom: 3px; }
+    .sup-stat-num { font-size: 20px; font-weight: 900; color: var(--white); line-height: 1; }
+    .sup-stat-lbl { font-size: 11px; color: rgba(255,255,255,0.45); margin-top: 2px; }
+
+    /* ============================================================
+       TYPES SECTION (white)
+    ============================================================ */
+    .types-section {
+      background: var(--white);
+      padding: 64px 48px;
+    }
+    @media (max-width: 720px) { .types-section { padding: 48px 20px; } }
+
+    .sec-title {
+      text-align: center;
+      font-size: 26px;
+      font-weight: 900;
+      color: var(--text-dark);
+      margin-bottom: 40px;
+    }
+    .sec-title .big { font-size: 36px; color: var(--navy); }
+
+    .types-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    @media (max-width: 900px) { .types-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 480px) { .types-grid { gap: 12px; } }
+
+    .type-card {
+      background: var(--white);
+      border: 1px solid #E5E7EB;
+      border-radius: 16px;
+      padding: 20px 18px 0;
+      box-shadow: 0 2px 14px rgba(0,0,0,0.06);
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+      overflow: hidden;
+      min-height: 290px;
+    }
+    .type-card:hover { transform: translateY(-4px); box-shadow: 0 8px 28px rgba(0,0,0,0.1); }
+
+    /* 上段：アイコン（左）＋TYPE番号（右） */
+    .tc-top-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      position: relative; z-index: 2;
+    }
+
+    /* TYPE番号：右上ウォーターマーク */
+    .tc-type-num {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      color: rgba(0,0,0,0.1);
+      line-height: 1;
+      user-select: none;
+    }
+    .tc-type-num .t { font-size: 9px; font-weight: 700; letter-spacing: 0.14em; }
+    .tc-type-num .n { font-size: 34px; font-weight: 900; line-height: 1; }
+
+    /* アイコン：六角形・ソリッドカラー・白アイコン */
+    .tc-icon {
+      width: 54px; height: 54px;
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      color: white;
+      flex-shrink: 0;
+    }
+    .tc-blue   { background: #3B82F6; }
+    .tc-teal   { background: #0EA5E9; }
+    .tc-amber  { background: #F59E0B; }
+    .tc-purple { background: #8B5CF6; }
+
+    .tc-title {
+      font-size: 18px; font-weight: 900; color: var(--text-dark);
+      margin-bottom: 8px; line-height: 1.3;
+      position: relative; z-index: 2;
+    }
+    @media (max-width: 480px) { .tc-title { font-size: 15px; } }
+
+    .tc-badge {
+      display: inline-block;
+      padding: 3px 11px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      position: relative; z-index: 2;
+    }
+    .tb-blue   { background: rgba(59,130,246,0.12);  color: #1D4ED8; border: 1px solid rgba(59,130,246,0.2); }
+    .tb-teal   { background: rgba(14,165,233,0.12);  color: #0369A1; border: 1px solid rgba(14,165,233,0.2); }
+    .tb-amber  { background: rgba(245,158,11,0.12);  color: #B45309; border: 1px solid rgba(245,158,11,0.2); }
+    .tb-purple { background: rgba(139,92,246,0.12);  color: #6D28D9; border: 1px solid rgba(139,92,246,0.2); }
+
+    .tc-desc {
+      font-size: 11px; color: var(--text-muted); line-height: 1.7;
+      margin-bottom: 100px;
+      position: relative; z-index: 2;
+    }
+
+    /* ============================================================
+       FEATURES SECTION
+    ============================================================ */
+    .feat-section {
+      background: var(--light-bg);
+      padding: 56px 48px;
+    }
+    @media (max-width: 720px) { .feat-section { padding: 48px 20px; } }
+
+    .feat-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 36px;
+    }
+    .feat-deco { flex: 1; max-width: 60px; height: 1px; }
+    .feat-deco.l { background: linear-gradient(90deg, transparent, #D1D5DB); }
+    .feat-deco.r { background: linear-gradient(90deg, #D1D5DB, transparent); }
+    .feat-ttl { font-size: 22px; font-weight: 900; color: var(--text-dark); white-space: nowrap; }
+
+    .feat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    @media (max-width: 720px) { .feat-grid { grid-template-columns: 1fr; max-width: 420px; } }
+
+    .feat-card {
+      background: var(--white);
+      border-radius: 14px;
+      padding: 24px 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    .feat-icon {
+      width: 46px; height: 46px;
+      background: rgba(26,45,90,0.08);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      color: var(--navy);
+      flex-shrink: 0;
+    }
+    .feat-body .feat-name { font-size: 15px; font-weight: 900; color: var(--text-dark); margin-bottom: 5px; }
+    .feat-body .feat-desc { font-size: 12px; color: var(--text-muted); line-height: 1.7; }
+
+    /* ============================================================
+       METHOD SECTION (navy)
+    ============================================================ */
+    .method-section {
+      background: var(--navy);
+      padding: 64px 48px;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 48px;
+      align-items: center;
+    }
+    @media (max-width: 900px) {
+      .method-section { grid-template-columns: 1fr; padding: 48px 24px; }
+    }
+
+    .method-tag {
+      font-size: 10px;
+      color: var(--gold);
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .method-tag::before { content:''; display:block; width:18px; height:2px; background:var(--gold); }
+
+    .method-title { font-size: 24px; font-weight: 900; color: var(--white); margin-bottom: 14px; line-height: 1.4; }
+    @media (max-width: 480px) { .method-title { font-size: 20px; } }
+    .method-desc { font-size: 13px; color: var(--muted-lp); line-height: 1.9; margin-bottom: 26px; }
+
+    .method-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 22px;
+      background: transparent;
+      color: var(--white);
+      border: 1.5px solid rgba(255,255,255,0.28);
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: 'Noto Sans JP', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .method-btn:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.5); }
+
+    /* Emblem */
+    .emblem {
+      width: 170px;
+      height: 190px;
+      background: linear-gradient(145deg, #2a4a80, var(--navy));
+      border: 2px solid rgba(255,215,0,0.28);
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.45);
+      margin: 0 auto;
+    }
+    .emblem-stars { color: var(--gold); font-size: 10px; letter-spacing: 5px; margin-bottom: 8px; }
+    .emblem-icon  { font-size: 46px; color: var(--white); margin-bottom: 8px; }
+    .emblem-line  { width: 36px; height: 1px; background: rgba(255,215,0,0.35); margin: 6px 0; }
+    .emblem-n1    { font-size: 9px; color: rgba(255,255,255,0.5); letter-spacing: 0.22em; font-weight: 700; }
+    .emblem-n2    { font-size: 12px; color: var(--white); letter-spacing: 0.1em; font-weight: 900; margin-top: 2px; }
+
+    /* Method features */
+    .mf-item { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 22px; }
+    .mf-item:last-child { margin-bottom: 0; }
+    .mf-icon {
+      width: 38px; height: 38px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      color: var(--gold);
+      flex-shrink: 0;
+    }
+    .mf-name { font-size: 13px; font-weight: 700; color: var(--white); margin-bottom: 2px; }
+    .mf-desc { font-size: 11px; color: rgba(255,255,255,0.45); line-height: 1.6; }
+
+    /* Bottom CTA */
+    .bottom-cta {
+      background: var(--navy-dark);
+      padding: 56px 24px;
+      text-align: center;
+      border-top: 1px solid rgba(255,255,255,0.04);
+    }
+    .bottom-cta-tag   { font-size: 12px; color: rgba(255,255,255,0.45); margin-bottom: 8px; }
+    .bottom-cta-title { font-size: 22px; font-weight: 900; color: var(--white); margin-bottom: 8px; }
+    .bottom-cta-sub   { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 28px; }
+    .bottom-cta-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 18px 48px;
+      background: var(--gold);
+      color: var(--navy);
+      border: none;
+      border-radius: 50px;
+      font-size: 17px;
+      font-weight: 900;
+      font-family: 'Noto Sans JP', sans-serif;
+      cursor: pointer;
+      animation: pulse-gold 2.4s ease-in-out infinite;
+      transition: transform 0.2s;
+    }
+    .bottom-cta-btn:hover { transform: translateY(-2px); }
+    .bottom-cta-note { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 14px; }
+
+    /* LP footer */
+    .lp-footer {
+      background: var(--navy-dark);
+      padding: 20px 24px;
+      text-align: center;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    .lp-footer-motto { font-size: 14px; font-weight: 700; color: var(--gold); letter-spacing: 0.2em; margin-bottom: 5px; }
+    .lp-footer-copy  { font-size: 10px; color: rgba(255,255,255,0.22); }
+
+    /* ============================================================
+       QUIZ WRAPPER
+    ============================================================ */
+    #quiz-wrapper {
+      display: none;
+      justify-content: center;
+      min-height: 100vh;
+      background: var(--navy);
+      position: relative;
+    }
+    #quiz-wrapper.active { display: flex; }
+
+    /* Field bg lines */
+    .field-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+      display: none;
+    }
+    .field-bg.active { display: block; }
+    .field-bg svg { width:100%; height:100%; opacity:0.04; }
+
+    .quiz-container {
+      width: 100%;
+      max-width: 480px;
+      min-height: 100vh;
+      padding: 28px 20px 44px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Quiz screens */
+    .qscreen { display: none; }
+    .qscreen.active { display: block; }
+
+    @keyframes screenIn {
+      from { opacity:0; transform:translateY(16px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    .qscreen.active { animation: screenIn 0.4s ease; }
+
+    /* ============================================================
+       QUESTION SCREEN
+    ============================================================ */
+    .prog-header { margin-bottom: 26px; }
+    .prog-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+    .prog-label { font-size:13px; color:rgba(184,208,240,1); }
+    .prog-label strong { color:var(--gold); font-weight:700; }
+    .prog-pct { font-size:13px; color:var(--gold-light); font-weight:700; }
+    .prog-track { height:6px; background:rgba(255,255,255,0.08); border-radius:3px; overflow:hidden; }
+    .prog-fill { height:100%; background:linear-gradient(90deg,var(--gold),var(--gold-light)); border-radius:3px; transition:width 0.5s cubic-bezier(0.4,0,0.2,1); }
+
+    .q-card {
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 20px;
+      padding: 26px 20px;
+      margin-bottom: 18px;
+    }
+    @keyframes qSlideRight { from{opacity:0;transform:translateX(40px)} to{opacity:1;transform:translateX(0)} }
+    @keyframes qSlideLeft  { from{opacity:0;transform:translateX(-40px)} to{opacity:1;transform:translateX(0)} }
+    .q-card.slide-right { animation: qSlideRight 0.32s cubic-bezier(0.4,0,0.2,1); }
+    .q-card.slide-left  { animation: qSlideLeft  0.32s cubic-bezier(0.4,0,0.2,1); }
+
+    .q-num  { font-size:11px; color:var(--gold); font-weight:700; letter-spacing:0.12em; margin-bottom:8px; }
+    .q-text { font-size:19px; font-weight:700; line-height:1.5; margin-bottom:4px; }
+    .q-note { font-size:12px; color:rgba(184,208,240,1); margin-bottom:18px; min-height:16px; }
+
+    .opts { display:flex; flex-direction:column; gap:10px; }
+
+    .opt-btn {
+      width:100%; padding:13px 16px;
+      background:rgba(255,255,255,0.05);
+      border:1.5px solid rgba(255,255,255,0.1);
+      border-radius:12px;
+      color:var(--white);
+      font-size:14px;
+      font-family:'Noto Sans JP',sans-serif;
+      font-weight:500;
+      text-align:left;
+      cursor:pointer;
+      transition:all 0.18s;
+      display:flex; align-items:center; gap:12px;
+    }
+    .opt-btn:active { transform:scale(0.98); }
+    .opt-btn:hover  { background:rgba(255,215,0,0.08); border-color:rgba(255,215,0,0.45); }
+    .opt-btn.selected { background:rgba(255,215,0,0.15); border-color:var(--gold); }
+    .opt-icon {
+      width:34px; height:34px;
+      background:rgba(255,255,255,0.07);
+      border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      font-size:16px; flex-shrink:0;
+      transition:all 0.18s;
+      color:rgba(184,208,240,1);
+    }
+    .opt-btn.selected .opt-icon { background:var(--gold); color:var(--navy); }
+    .opt-btn.selected .opt-icon i { color:var(--navy) !important; }
+
+    @keyframes ripple {
+      from { box-shadow:0 0 0 0 rgba(255,215,0,0.5); }
+      to   { box-shadow:0 0 0 12px rgba(255,215,0,0); }
+    }
+    .opt-btn.ripple { animation:ripple 0.4s ease-out; }
+
+    .chk-btn {
+      width:100%; padding:12px 16px;
+      background:rgba(255,255,255,0.05);
+      border:1.5px solid rgba(255,255,255,0.1);
+      border-radius:12px;
+      color:var(--white);
+      font-size:14px;
+      font-family:'Noto Sans JP',sans-serif;
+      font-weight:500;
+      text-align:left;
+      cursor:pointer;
+      transition:all 0.18s;
+      display:flex; align-items:center; gap:12px;
+    }
+    .chk-btn:hover { background:rgba(255,215,0,0.06); }
+    .chk-btn.checked { background:rgba(255,215,0,0.12); border-color:var(--gold); }
+    .chk-box {
+      width:22px; height:22px;
+      border:2px solid rgba(255,255,255,0.22);
+      border-radius:6px; flex-shrink:0;
+      display:flex; align-items:center; justify-content:center;
+      transition:all 0.18s; color:var(--white); font-size:13px;
+    }
+    .chk-btn.checked .chk-box { background:var(--gold); border-color:var(--gold); color:var(--navy); }
+
+    .txt-input {
+      width:100%; padding:15px 18px;
+      background:rgba(255,255,255,0.06);
+      border:1.5px solid rgba(255,255,255,0.12);
+      border-radius:12px; color:var(--white);
+      font-size:16px; font-family:'Noto Sans JP',sans-serif;
+      outline:none; transition:border-color 0.2s;
+    }
+    .txt-input:focus { border-color:var(--gold); }
+    .txt-input::placeholder { color:rgba(168,192,214,0.38); }
+
+    .nav-row { display:flex; gap:12px; }
+    .btn-back {
+      flex:0 0 72px; padding:14px;
+      background:rgba(255,255,255,0.06);
+      border:1.5px solid rgba(255,255,255,0.12);
+      border-radius:12px; color:rgba(184,208,240,1);
+      font-size:14px; font-family:'Noto Sans JP',sans-serif;
+      cursor:pointer; transition:all 0.2s;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .btn-back:hover { background:rgba(255,255,255,0.1); }
+    .btn-next {
+      flex:1; padding:14px;
+      background: var(--gold);
+      border:none; border-radius:12px;
+      color:var(--navy); font-size:16px; font-weight:700;
+      font-family:'Noto Sans JP',sans-serif; cursor:pointer;
+      box-shadow:0 4px 20px rgba(255,215,0,0.38);
+      transition:all 0.2s;
+      display:flex; align-items:center; justify-content:center; gap:6px;
+    }
+    .btn-next:disabled { background:rgba(255,255,255,0.1); box-shadow:none; color:rgba(168,192,214,0.4); cursor:not-allowed; }
+    .btn-next:not(:disabled):hover { transform:translateY(-1px); }
+
+    /* ============================================================
+       LOADING SCREEN
+    ============================================================ */
+    #screen-loading.active {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: calc(100vh - 72px);
+      text-align: center;
+    }
+
+    .circ-wrap { position:relative; width:140px; height:140px; margin-bottom:32px; }
+    .circ-svg  { width:140px; height:140px; transform:rotate(-90deg); }
+    .circ-track { fill:none; stroke:rgba(255,255,255,0.08); stroke-width:6; }
+    .circ-fill  { fill:none; stroke:url(#circGrad); stroke-width:6; stroke-linecap:round; stroke-dasharray:377; stroke-dashoffset:377; transition:stroke-dashoffset 0.5s ease; }
+    .circ-center { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+    @keyframes spinBall { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+    .circ-ball { font-size:44px; color:white; animation:spinBall 2s linear infinite; }
+
+    .loading-ttl { font-size:22px; font-weight:700; margin-bottom:6px; }
+    .loading-sub { font-size:13px; color:rgba(184,208,240,1); line-height:1.8; margin-bottom:36px; }
+    .loading-steps { width:100%; max-width:340px; }
+    .l-step {
+      display:flex; align-items:center; gap:12px;
+      padding:12px 16px;
+      background:rgba(255,255,255,0.04);
+      border-radius:10px; margin-bottom:8px;
+      opacity:0; transform:translateY(10px);
+      transition:opacity 0.4s ease, transform 0.4s ease;
+      font-size:13px; color:rgba(184,208,240,1); text-align:left;
+    }
+    .l-step.visible { opacity:1; transform:translateY(0); }
+    .l-step.done { color:var(--gold); }
+    .l-step i { font-size:20px; flex-shrink:0; }
+
+    /* ============================================================
+       RESULT SCREEN
+    ============================================================ */
+    .glass-card {
+      background:rgba(255,255,255,0.08);
+      backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+      border:1px solid rgba(255,255,255,0.12);
+      border-radius:20px; padding:22px 20px;
+    }
+
+    .result-header { text-align:center; margin-bottom:24px; }
+    .result-name   { font-size:13px; color:rgba(184,208,240,1); margin-bottom:6px; }
+    .type-badge-wrap {
+      display:inline-flex; align-items:center; gap:6px;
+      background:linear-gradient(135deg,var(--gold-light),#FF8C00);
+      color:var(--navy); font-size:11px; font-weight:700;
+      padding:5px 14px; border-radius:20px; margin-bottom:12px; letter-spacing:0.06em;
+    }
+    .type-badge-wrap i { font-size:13px; }
+    .type-icon-ring {
+      width:72px; height:72px;
+      background:rgba(255,215,0,0.12);
+      border:2px solid rgba(255,215,0,0.35);
+      border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      margin:0 auto 12px; font-size:32px; color:var(--gold);
+    }
+    .type-name-txt { font-size:24px; font-weight:900; line-height:1.3; margin-bottom:8px; }
+    .type-desc-txt { font-size:13px; color:rgba(184,208,240,1); line-height:1.8; }
+
+    .r-card { margin-bottom:14px; }
+    .r-card-ttl { font-size:12px; font-weight:700; color:rgba(184,208,240,1); margin-bottom:14px; text-align:center; letter-spacing:0.06em; display:flex; align-items:center; justify-content:center; gap:6px; }
+    .chart-wrap { max-width:270px; margin:0 auto; }
+
+    .score-card {
+      background:rgba(255,255,255,0.08);
+      backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,0.12);
+      border-radius:20px; padding:22px 20px; margin-bottom:14px;
+      position:relative; overflow:hidden;
+    }
+    .score-top { display:flex; align-items:center; gap:8px; margin-bottom:14px; }
+    .score-top-lbl { font-size:12px; color:rgba(184,208,240,1); letter-spacing:0.06em; }
+    .score-gauge-wrap { display:flex; justify-content:center; margin-bottom:14px; position:relative; }
+    .gauge-svg { width:160px; height:90px; }
+    .gauge-track { fill:none; stroke:rgba(255,255,255,0.08); stroke-width:10; stroke-linecap:round; }
+    .gauge-fill  { fill:none; stroke:url(#gaugeGrad); stroke-width:10; stroke-linecap:round; stroke-dasharray:251; stroke-dashoffset:251; transition:stroke-dashoffset 1.5s cubic-bezier(0.4,0,0.2,1); }
+    .gauge-num { position:absolute; bottom:-2px; left:50%; transform:translateX(-50%); font-size:42px; font-weight:900; color:var(--gold); line-height:1; transition:filter 0.5s; }
+    .gauge-unit { font-size:16px; color:rgba(184,208,240,1); }
+    .score-msg { font-size:13px; font-weight:700; color:var(--white); text-align:center; transition:filter 0.5s; }
+
+    .blur-lock {
+      position:absolute; inset:0;
+      display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
+      background:rgba(26,45,90,0.38); opacity:0; transition:opacity 0.6s;
+    }
+    .blur-lock.show { opacity:1; }
+    .lock-circle {
+      width:44px; height:44px;
+      background:rgba(255,255,255,0.08);
+      border:1.5px solid rgba(255,255,255,0.18);
+      border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      font-size:20px; color:rgba(184,208,240,1); margin-bottom:4px;
+    }
+    .lock-txt { font-size:12px; color:rgba(184,208,240,1); }
+
+    .blur-card {
+      background:rgba(255,255,255,0.08);
+      backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,0.12);
+      border-radius:20px; padding:20px; margin-bottom:14px;
+      position:relative; overflow:hidden;
+    }
+    .blur-inner    { filter:blur(10px); user-select:none; pointer-events:none; }
+    .blur-inner-sm { filter:blur(8px);  user-select:none; pointer-events:none; }
+    .blur-overlay  { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; }
+
+    .cat-lbl { font-size:11px; color:rgba(184,208,240,1); margin-bottom:4px; letter-spacing:0.05em; }
+    .cat-val  { font-size:20px; font-weight:700; color:var(--gold-light); margin-bottom:4px; }
+    .cat-desc { font-size:12px; color:rgba(184,208,240,1); line-height:1.7; }
+
+    .sec-lbl { font-size:11px; color:var(--gold); font-weight:700; letter-spacing:0.08em; margin-bottom:10px; display:flex; align-items:center; gap:5px; }
+    .pts-list { list-style:none; }
+    .pts-list li { padding:9px 0; border-bottom:1px solid rgba(255,255,255,0.06); font-size:13px; display:flex; align-items:flex-start; gap:10px; line-height:1.5; }
+    .pts-list li:last-child { border-bottom:none; }
+    .pts-list li i { color:var(--gold); font-size:15px; flex-shrink:0; margin-top:1px; }
+
+    .achievements { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:18px; }
+    .ach-item {
+      background:rgba(255,213,79,0.08); border:1px solid rgba(255,213,79,0.2);
+      border-radius:14px; padding:14px 10px; text-align:center;
+    }
+    .ach-item i { font-size:24px; color:var(--gold-light); margin-bottom:6px; display:block; }
+    .ach-text { font-size:11px; color:rgba(184,208,240,1); line-height:1.5; }
+
+    .cta-box {
+      background:rgba(255,215,0,0.06); border:1px solid rgba(255,215,0,0.22);
+      border-radius:20px; padding:24px 20px; text-align:center; margin-bottom:14px;
+    }
+    .cta-lead { font-size:12px; color:rgba(184,208,240,1); margin-bottom:5px; }
+    .cta-hdl  { font-size:19px; font-weight:700; margin-bottom:6px; }
+    .cta-sub  { font-size:12px; color:rgba(184,208,240,1); line-height:1.8; margin-bottom:22px; }
+    .cta-note { font-size:11px; color:rgba(168,192,214,0.65); line-height:1.7; margin-top:10px; }
+
+    @keyframes pulse-green {
+      0%,100% { box-shadow:0 4px 20px rgba(6,199,85,0.4); }
+      50%      { box-shadow:0 4px 32px rgba(6,199,85,0.65); }
+    }
+    .btn-line {
+      display:flex; align-items:center; justify-content:center; gap:8px;
+      width:100%; padding:18px;
+      background:#06C755; color:var(--white);
+      border:none; border-radius:14px;
+      font-size:17px; font-weight:700;
+      font-family:'Noto Sans JP',sans-serif; cursor:pointer;
+      text-decoration:none;
+      animation:pulse-green 2.4s ease-in-out infinite;
+      transition:transform 0.2s;
+    }
+    .btn-line:hover { transform:translateY(-2px); }
+    .btn-line i { font-size:22px; }
+
+    .btn-secondary {
+      display:flex; align-items:center; justify-content:center; gap:6px;
+      width:100%; padding:14px; color:rgba(184,208,240,1); font-size:13px;
+      font-family:'Noto Sans JP',sans-serif;
+      background:none; border:1px solid rgba(255,255,255,0.1);
+      border-radius:12px; margin-bottom:28px; cursor:pointer; transition:all 0.2s;
+    }
+    .btn-secondary:hover { border-color:rgba(255,255,255,0.2); color:var(--white); }
+
+    .sup-credit {
+      text-align:center; font-size:11px; color:var(--gold-light);
+      margin-bottom:14px; opacity:0.85;
+      display:flex; align-items:center; justify-content:center; gap:5px;
+    }
+
+    .site-footer {
+      text-align:center; padding:20px 0 8px;
+      border-top:1px solid rgba(255,255,255,0.06); margin-top:auto;
+    }
+    .footer-motto { font-size:14px; font-weight:700; color:var(--gold); margin-bottom:5px; letter-spacing:0.14em; }
+    .footer-copy  { font-size:10px; color:rgba(168,192,214,0.3); }
+
+    .reveal { opacity:0; transform:translateY(16px); transition:opacity 0.5s ease, transform 0.5s ease; }
+    .reveal.in { opacity:1; transform:translateY(0); }
+  </style>
+</head>
+<body>
+
+<!-- SVG gradient defs -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <linearGradient id="circGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FFD700"/>
+      <stop offset="100%" stop-color="#FFE033"/>
+    </linearGradient>
+    <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FFD700"/>
+      <stop offset="100%" stop-color="#FFE033"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<!-- ============================================================
+     LP START SCREEN
+============================================================ -->
+<div id="screen-start">
+
+  <!-- Header -->
+  <header class="lp-header">
+    <div class="lp-logo">
+      <img src="img/logo.png" alt="KASHIMA Academy" style="height:60px;width:auto;display:block;filter:brightness(0) invert(1);">
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero-section">
+    <div class="hero-left">
+      <p class="hero-tagline">\ たった3分で未来がわかる /</p>
+      <h1 class="hero-title">
+        お子さまの<span class="accent">サッカー才能タイプ</span><br>
+        ＆６ヶ月成長予測診断
+      </h1>
+      <p class="hero-sub">
+        「うちの子、どんなタイプ？どう伸びる？」<br>
+        鹿島学園の指導ノウハウをもとにした本格診断
+      </p>
+      <button class="hero-cta" onclick="startDiagnosis()">
+        <i class="ph-fill ph-soccer-ball"></i>
+        無料で診断をはじめる
+        <i class="ph-bold ph-arrow-right" style="font-size:17px"></i>
+      </button>
+      <p class="hero-info">3分・12問のカンタン診断<span>/</span>完全無料・結果はすぐに表示</p>
+    </div>
+
+    <div class="hero-right">
+      <!-- Field lines -->
+      <svg class="hero-field" viewBox="0 0 600 520" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="40" y="40" width="520" height="440" rx="4" stroke="white" stroke-width="1.5"/>
+        <line x1="40" y1="260" x2="560" y2="260" stroke="white" stroke-width="1.5"/>
+        <circle cx="300" cy="260" r="72" stroke="white" stroke-width="1.5"/>
+        <circle cx="300" cy="260" r="5" fill="white"/>
+        <rect x="160" y="40" width="280" height="94" rx="2" stroke="white" stroke-width="1.5"/>
+        <rect x="160" y="386" width="280" height="94" rx="2" stroke="white" stroke-width="1.5"/>
+        <rect x="213" y="40" width="174" height="42" rx="2" stroke="white" stroke-width="1.5"/>
+        <rect x="213" y="438" width="174" height="42" rx="2" stroke="white" stroke-width="1.5"/>
+        <circle cx="300" cy="82" r="6" fill="white"/>
+        <circle cx="300" cy="438" r="6" fill="white"/>
+      </svg>
+      <div class="hero-gold-bar"></div>
+      <div class="hero-gold-bar2"></div>
+      <div class="hero-num">10</div>
+      <div class="hero-badge-lbl">KASHIMA ACADEMY</div>
+      <i class="ph-fill ph-soccer-ball hero-ball-deco"></i>
+      <div class="hero-achieve">
+        <div class="ach-line">DISCOVER.</div>
+        <div class="ach-line">GROW.</div>
+        <div class="ach-line gold">ACHIEVE.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Supervisor strip -->
+  <div class="sup-strip">
+    <div class="sup-left">
+      <img src="img/supervisor.png" class="sup-photo" alt="監督">
+      <div class="sup-name-block">
+        <span class="sup-label">【監修】</span>
+        <div class="sup-name">鹿島学園高校サッカー部 鈴木監督</div>
+        <div class="sup-desc">プロ・強豪高を知り尽くした指導者が設計した診断ロジック</div>
+        <div class="sup-sig">Suzuki</div>
+      </div>
+    </div>
+    <div class="sup-stats">
+      <div class="sup-stat">
+        <i class="ph-bold ph-trophy"></i>
+        <div class="sup-stat-num">200名以上</div>
+        <div class="sup-stat-lbl">全国大会出場者</div>
+      </div>
+      <div class="sup-stat">
+        <i class="ph-bold ph-buildings"></i>
+        <div class="sup-stat-num">30年以上</div>
+        <div class="sup-stat-lbl">指導実績</div>
+      </div>
+      <div class="sup-stat">
+        <i class="ph-bold ph-users-three"></i>
+        <div class="sup-stat-num">多数輩出</div>
+        <div class="sup-stat-lbl">育成実績</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4 Types -->
+  <section class="types-section">
+    <h2 class="sec-title">診断でわかる<span class="big">4</span>つのタイプ</h2>
+    <div class="types-grid">
+      <div class="type-card">
+        <div class="tc-top-row">
+          <div class="tc-icon tc-blue"><i class="ph-bold ph-star"></i></div>
+          <div class="tc-type-num"><span class="t">TYPE</span><span class="n">01</span></div>
+        </div>
+        <div class="tc-title">ファンタジスタ型</div>
+        <div class="tc-badge tb-blue">FW / 魔術師</div>
+        <div class="tc-desc">創造性と技術でチームを勝利に導くアタッカータイプ</div>
+        <div class="tc-photo-wrap tc-col-blue"><img src="img/player-type1.png" class="tc-bg-img" alt="" style="height:280%;object-position:center 18%;"></div>
+        <div class="tc-photo-fade"></div>
+      </div>
+      <div class="type-card">
+        <div class="tc-top-row">
+          <div class="tc-icon tc-teal"><i class="ph-bold ph-shield-check"></i></div>
+          <div class="tc-type-num"><span class="t">TYPE</span><span class="n">02</span></div>
+        </div>
+        <div class="tc-title">鉄壁の守護者型</div>
+        <div class="tc-badge tb-teal">DF / 守護神</div>
+        <div class="tc-desc">強い守備力と安定感でチームを支えるディフェンダータイプ</div>
+        <div class="tc-photo-wrap tc-col-teal"><img src="img/player-type2.png" class="tc-bg-img" alt="" style="height:280%;object-position:center 14%;"></div>
+        <div class="tc-photo-fade"></div>
+      </div>
+      <div class="type-card">
+        <div class="tc-top-row">
+          <div class="tc-icon tc-amber"><i class="ph-bold ph-compass"></i></div>
+          <div class="tc-type-num"><span class="t">TYPE</span><span class="n">03</span></div>
+        </div>
+        <div class="tc-title">知将アンカー型</div>
+        <div class="tc-badge tb-amber">MF / 司令塔</div>
+        <div class="tc-desc">ゲームを読み解きチームをコントロールする中盤の要タイプ</div>
+        <div class="tc-photo-wrap tc-col-amber"><img src="img/player-type3.png" class="tc-bg-img" alt="" style="height:280%;object-position:center 22%;"></div>
+        <div class="tc-photo-fade"></div>
+      </div>
+      <div class="type-card">
+        <div class="tc-top-row">
+          <div class="tc-icon tc-purple"><i class="ph-bold ph-flame"></i></div>
+          <div class="tc-type-num"><span class="t">TYPE</span><span class="n">04</span></div>
+        </div>
+        <div class="tc-title">闘将ストライカー型</div>
+        <div class="tc-badge tb-purple">ALL / 闘将</div>
+        <div class="tc-desc">闘志とフィジカルでチームを牽引するリーダータイプ</div>
+        <div class="tc-photo-wrap tc-col-purple"><img src="img/player-9.png" class="tc-bg-img" alt="" style="height:220%;object-position:center 15%;"></div>
+        <div class="tc-photo-fade"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="feat-section">
+    <div class="feat-title-row">
+      <span class="feat-deco l"></span>
+      <span class="feat-ttl">診断の特徴</span>
+      <span class="feat-deco r"></span>
+    </div>
+    <div class="feat-grid">
+      <div class="feat-card">
+        <div class="feat-icon"><i class="ph-bold ph-list-numbers"></i></div>
+        <div class="feat-body">
+          <div class="feat-name">12問のカンタン診断</div>
+          <div class="feat-desc">お子さまの特徴やプレー傾向から才能タイプを診断します</div>
+        </div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon"><i class="ph-bold ph-gift"></i></div>
+        <div class="feat-body">
+          <div class="feat-name">完全無料</div>
+          <div class="feat-desc">何度でも無料で診断可能。登録不要・すぐに結果がわかります</div>
+        </div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon"><i class="ph-bold ph-lightning"></i></div>
+        <div class="feat-body">
+          <div class="feat-name">即時結果表示</div>
+          <div class="feat-desc">診断後すぐにタイプと6ヶ月の成長予測を確認できます</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Photo Gallery -->
+  <div class="photo-gallery">
+    <div class="gallery-item"><img src="img/team-slide.jpg" alt="鹿島学園 得点シーン"></div>
+    <div class="gallery-item"><img src="img/water-celebration.jpg" alt="鹿島学園 関東昇格"></div>
+    <div class="gallery-item"><img src="img/team-group.jpg" alt="鹿島学園 チーム"></div>
+  </div>
+
+  <!-- Method -->
+  <section class="method-section">
+    <div class="method-left">
+      <div class="method-tag">KASHIMA ACADEMY</div>
+      <h2 class="method-title">鹿島学園の育成メソッド</h2>
+      <p class="method-desc">
+        個性を見極め、可能性を最大限に引き出す。<br>
+        一人ひとりに合った育成で、未来のトッププレーヤーを育成します。
+      </p>
+      <button class="method-btn" onclick="window.open('https://line.me/ti/p/~759iofib','_blank','noopener')">
+        鹿島学園について詳しく見る
+        <i class="ph-bold ph-arrow-right" style="font-size:13px"></i>
+      </button>
+    </div>
+
+    <div style="overflow:hidden;border-radius:16px;width:280px;height:260px;box-shadow:0 8px 40px rgba(0,0,0,0.45);">
+      <img src="img/kids-soccer.jpg" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center 40%;">
+    </div>
+
+    <div class="method-right">
+      <div class="mf-item">
+        <div class="mf-icon"><i class="ph-bold ph-graduation-cap"></i></div>
+        <div>
+          <div class="mf-name">街クラブをこえる！鹿島学園下部組織</div>
+          <div class="mf-desc">強豪校と同等の指導環境を提供</div>
+        </div>
+      </div>
+      <div class="mf-item">
+        <div class="mf-icon"><i class="ph-bold ph-users-three"></i></div>
+        <div>
+          <div class="mf-name">ノンセレクション×本格育成</div>
+          <div class="mf-desc">すべての子どもに成長のチャンスを</div>
+        </div>
+      </div>
+      <div class="mf-item">
+        <div class="mf-icon"><i class="ph-bold ph-chart-line-up"></i></div>
+        <div>
+          <div class="mf-name">個別最適化された成長プラン</div>
+          <div class="mf-desc">診断結果をもとに最適な育成プランをご提案</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bottom CTA -->
+  <div class="bottom-cta">
+    <div class="bottom-cta-tag">\ 3分でわかる /</div>
+    <div class="bottom-cta-title">お子さまの才能タイプを今すぐチェック</div>
+    <div class="bottom-cta-sub">完全無料・登録不要・すぐに結果表示</div>
+    <button class="bottom-cta-btn" onclick="startDiagnosis()">
+      <i class="ph-fill ph-soccer-ball" style="font-size:20px"></i>
+      無料で診断をはじめる
+    </button>
+    <div class="bottom-cta-note">3分・12問のカンタン診断</div>
+  </div>
+
+  <footer class="lp-footer">
+    <div class="lp-footer-motto">前力全進</div>
+    <div class="lp-footer-copy">© KASHIMA ACADEMY SPORTS CLUB</div>
+  </footer>
+
+</div><!-- /#screen-start -->
+
+<!-- Field background (quiz) -->
+<div class="field-bg" id="field-bg">
+  <svg viewBox="0 0 480 900" preserveAspectRatio="xMidYMid slice" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="40" y="60" width="400" height="780" rx="4" stroke="white" stroke-width="1.5" opacity="0.4"/>
+    <line x1="40" y1="450" x2="440" y2="450" stroke="white" stroke-width="1.5" opacity="0.4"/>
+    <circle cx="240" cy="450" r="60" stroke="white" stroke-width="1.5" opacity="0.4"/>
+    <circle cx="240" cy="450" r="4" fill="white" opacity="0.4"/>
+    <rect x="140" y="60" width="200" height="80" rx="2" stroke="white" stroke-width="1.5" opacity="0.4"/>
+    <rect x="140" y="760" width="200" height="80" rx="2" stroke="white" stroke-width="1.5" opacity="0.4"/>
+  </svg>
+</div>
+
+<!-- ============================================================
+     QUIZ WRAPPER
+============================================================ -->
+<div id="quiz-wrapper">
+  <div class="quiz-container">
+
+    <!-- Question -->
+    <div id="screen-question" class="qscreen">
+      <div class="prog-header">
+        <div class="prog-top">
+          <span class="prog-label">Q<strong id="q-cur">1</strong> / 12</span>
+          <span class="prog-pct" id="q-pct">8%</span>
+        </div>
+        <div class="prog-track">
+          <div class="prog-fill" id="prog-fill" style="width:8.33%"></div>
+        </div>
+      </div>
+      <div class="q-card" id="q-card">
+        <div class="q-num" id="q-num">Q1</div>
+        <div class="q-text" id="q-text"></div>
+        <div class="q-note" id="q-note"></div>
+        <div class="opts" id="q-opts"></div>
+      </div>
+      <div class="nav-row">
+        <button class="btn-back" id="btn-back" onclick="goBack()">
+          <i class="ph-bold ph-arrow-left" style="font-size:18px"></i>
+        </button>
+        <button class="btn-next" id="btn-next" onclick="goNext()" disabled>
+          次へ <i class="ph-bold ph-arrow-right" style="font-size:16px"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div id="screen-loading" class="qscreen">
+      <div class="circ-wrap">
+        <svg class="circ-svg" viewBox="0 0 120 120">
+          <circle class="circ-track" cx="60" cy="60" r="54"/>
+          <circle class="circ-fill" id="circ-fill" cx="60" cy="60" r="54"/>
+        </svg>
+        <div class="circ-center">
+          <i class="ph-fill ph-soccer-ball circ-ball" style="font-size:40px"></i>
+        </div>
+      </div>
+      <div class="loading-ttl">診断中...</div>
+      <div class="loading-sub" id="loading-hint">お子さまに最適な診断結果を<br>生成しています</div>
+      <div class="loading-steps">
+        <div class="l-step" id="lstep-1"><i class="ph-bold ph-database"></i><span>回答データを受信中...</span></div>
+        <div class="l-step" id="lstep-2"><i class="ph-bold ph-magnifying-glass"></i><span>年齢・特性を分析中...</span></div>
+        <div class="l-step" id="lstep-3"><i class="ph-bold ph-soccer-ball"></i><span>最適なカテゴリを照合中...</span></div>
+        <div class="l-step" id="lstep-4"><i class="ph-bold ph-sparkle"></i><span>診断結果を生成中...</span></div>
+      </div>
+    </div>
+
+    <!-- Result -->
+    <div id="screen-result" class="qscreen">
+      <div class="result-header reveal">
+        <div class="result-name" id="result-name"></div>
+        <div class="type-badge-wrap">
+          <i class="ph-bold ph-check-circle"></i>診断タイプ確定
+        </div>
+        <div class="type-icon-ring">
+          <i class="ph-bold ph-target" id="type-icon" style="font-size:32px"></i>
+        </div>
+        <div class="type-name-txt" id="type-name"></div>
+        <div class="type-desc-txt" id="type-desc"></div>
+      </div>
+
+      <div class="glass-card r-card reveal">
+        <div class="r-card-ttl"><i class="ph-bold ph-chart-polar"></i>適性レーダーチャート</div>
+        <div class="chart-wrap"><canvas id="radarChart"></canvas></div>
+      </div>
+
+      <div class="score-card reveal">
+        <div class="score-top">
+          <i class="ph-bold ph-target" style="font-size:16px;color:#FFD700"></i>
+          <span class="score-top-lbl">適性スコア</span>
+        </div>
+        <div class="score-gauge-wrap">
+          <svg class="gauge-svg" viewBox="0 0 160 90">
+            <path class="gauge-track" d="M 15 85 A 65 65 0 0 1 145 85" stroke-linecap="round"/>
+            <path class="gauge-fill" id="gauge-fill" d="M 15 85 A 65 65 0 0 1 145 85" stroke-linecap="round"/>
+          </svg>
+          <div class="gauge-num" id="gauge-num" style="bottom:4px">
+            <span id="score-display">0</span><span class="gauge-unit">点</span>
+          </div>
+        </div>
+        <div class="score-msg" id="score-msg"></div>
+        <div class="blur-lock" id="score-lock">
+          <div class="lock-circle"><i class="ph-bold ph-lock-simple" style="font-size:20px"></i></div>
+          <div class="lock-txt">LINEで全結果を確認</div>
+        </div>
+      </div>
+
+      <div class="blur-card reveal">
+        <div class="blur-inner">
+          <div class="cat-lbl">おすすめカテゴリ</div>
+          <div class="cat-val" id="r-cat">スクール（スペシャルクラス）</div>
+          <div class="cat-desc" id="r-cat-desc">お子さまに最適なクラスです。</div>
+        </div>
+        <div class="blur-overlay">
+          <div class="lock-circle"><i class="ph-bold ph-lock-simple" style="font-size:20px"></i></div>
+          <div class="lock-txt">LINEで確認できます</div>
+        </div>
+      </div>
+
+      <div class="blur-card reveal">
+        <div class="blur-inner-sm">
+          <div class="sec-lbl"><i class="ph-bold ph-trend-up"></i>伸びしろポイント</div>
+          <ul class="pts-list" id="r-points">
+            <li><i class="ph-bold ph-caret-right"></i>テクニックの習得スピードが早い</li>
+          </ul>
+        </div>
+        <div class="blur-overlay">
+          <div class="lock-circle"><i class="ph-bold ph-lock-simple" style="font-size:20px"></i></div>
+          <div class="lock-txt" style="font-size:11px">LINEで確認できます</div>
+        </div>
+      </div>
+
+      <div class="blur-card reveal">
+        <div class="blur-inner-sm">
+          <div class="sec-lbl"><i class="ph-bold ph-calendar-check"></i>6ヶ月後にできること</div>
+          <ul class="pts-list" id="r-growth">
+            <li><i class="ph-bold ph-caret-right"></i>ドリブルで相手をかわせるようになる</li>
+          </ul>
+        </div>
+        <div class="blur-overlay">
+          <div class="lock-circle"><i class="ph-bold ph-lock-simple" style="font-size:20px"></i></div>
+          <div class="lock-txt" style="font-size:11px">LINEで確認できます</div>
+        </div>
+      </div>
+
+      <div class="sup-credit reveal">
+        <i class="ph-bold ph-seal-check" style="font-size:13px;color:#FFD700"></i>
+        このプログラムは鹿島学園高校サッカー部 鈴木監督監修のもと設計されています
+      </div>
+
+      <div class="achievements reveal">
+        <div class="ach-item"><i class="ph-bold ph-trophy"></i><div class="ach-text">5年連続<br>関東大会出場</div></div>
+        <div class="ach-item"><i class="ph-bold ph-medal"></i><div class="ach-text">U-15茨城県<br>リーグ1部優勝（'25）</div></div>
+        <div class="ach-item"><i class="ph-bold ph-handshake"></i><div class="ach-text">鹿島学園高校<br>公式提携</div></div>
+        <div class="ach-item"><i class="ph-bold ph-lightning"></i><div class="ach-text">Jクラブ・強豪高<br>進路実績多数</div></div>
+      </div>
+
+      <div class="cta-box reveal">
+        <div class="cta-lead">ぼかしを解除して全結果を確認する</div>
+        <div class="cta-hdl">LINEで全診断結果を受け取る</div>
+        <div class="cta-sub">適性スコア・おすすめカテゴリ・<br>伸びしろポイント・6ヶ月成長予測の全てがわかります</div>
+        <a href="https://line.me/ti/p/~759iofib" class="btn-line" target="_blank" rel="noopener noreferrer">
+          <i class="ph-bold ph-chat-circle-dots"></i>LINEで全診断結果を受け取る
+        </a>
+        <div class="cta-note">
+          <i class="ph-bold ph-lock-open" style="font-size:13px"></i>
+          LINEを友だち追加すると、ぼかしなしの診断結果が届きます
+        </div>
+      </div>
+
+      <button class="btn-secondary reveal" onclick="window.open('https://line.me/ti/p/~759iofib','_blank','noopener')">
+        体験会の日程を見る <i class="ph-bold ph-arrow-right" style="font-size:14px"></i>
+      </button>
+
+      <div class="site-footer">
+        <div class="footer-motto">前力全進</div>
+        <div class="footer-copy">© KASHIMA ACADEMY SPORTS CLUB</div>
+      </div>
+    </div><!-- /#screen-result -->
+
+  </div><!-- /.quiz-container -->
+</div><!-- /#quiz-wrapper -->
+
+<script>
+// =============================================
+// 質問データ
+// =============================================
+const QUESTIONS = [
+  {
+    id:1, type:'single', text:'お子さまの学年は？', note:'',
+    options:[
+      {label:'年長（6歳）',         icon:'ph-baby'},
+      {label:'小学1〜2年生',        icon:'ph-person-simple'},
+      {label:'小学3〜4年生',        icon:'ph-person-simple-run'},
+      {label:'小学5〜6年生',        icon:'ph-person-simple-bike'},
+      {label:'中学生',              icon:'ph-student'}
+    ]
+  },
+  {
+    id:2, type:'single', text:'サッカー経験は？', note:'',
+    options:[
+      {label:'未経験（これから始める）', icon:'ph-star'},
+      {label:'経験1年未満',             icon:'ph-star-half'},
+      {label:'経験1〜3年',              icon:'ph-soccer-ball'},
+      {label:'経験3年以上',             icon:'ph-trophy'}
+    ]
+  },
+  {
+    id:3, type:'single', text:'お子さまの性格に近いのは？', note:'',
+    options:[
+      {label:'元気・活発で目立ちたがり', icon:'ph-lightning'},
+      {label:'真面目・コツコツ努力家',   icon:'ph-book-open'},
+      {label:'仲間思い・チームワーク重視', icon:'ph-handshake'},
+      {label:'負けず嫌い・競争好き',     icon:'ph-sword'}
+    ]
+  },
+  {
+    id:4, type:'single', text:'サッカーで伸ばしたいことは？', note:'',
+    options:[
+      {label:'技術・テクニック',              icon:'ph-target'},
+      {label:'体力・フィジカル',              icon:'ph-barbell'},
+      {label:'仲間との絆・コミュニケーション', icon:'ph-users-three'},
+      {label:'試合で勝つ・上を目指す',        icon:'ph-crown'}
+    ]
+  },
+  {
+    id:5, type:'single', text:'週何回練習できますか？', note:'',
+    options:[
+      {label:'週1〜2回',       icon:'ph-calendar'},
+      {label:'週3〜4回',       icon:'ph-calendar-check'},
+      {label:'週5回以上',      icon:'ph-calendar-dots'},
+      {label:'まだ決めていない', icon:'ph-question'}
+    ]
+  },
+  {
+    id:6, type:'single', text:'高校・将来のサッカーについて', note:'',
+    options:[
+      {label:'楽しく続けられればOK',        icon:'ph-smiley'},
+      {label:'高校でもサッカーを続けてほしい', icon:'ph-graduation-cap'},
+      {label:'できれば強豪校・上を目指したい', icon:'ph-star'},
+      {label:'Jリーグ・プロを視野に入れている', icon:'ph-medal'}
+    ]
+  },
+  {
+    id:7, type:'multi',
+    text:'今一番気になることは？',
+    note:'複数選択可（0個でもOK）',
+    options:[
+      {label:'コーチの指導レベル'},
+      {label:'仲間・チームの雰囲気'},
+      {label:'試合・大会の機会'},
+      {label:'施設・グラウンドの環境'},
+      {label:'高校進路のサポート'},
+      {label:'費用・料金'},
+      {label:'練習時間・スケジュール'},
+      {label:'動画分析など最新の育成'}
+    ]
+  },
+  {
+    id:8, type:'single',
+    text:'好きなプレーはどれ？', note:'',
+    options:[
+      {label:'ゴールを決めること',             icon:'ph-soccer-ball'},
+      {label:'ドリブルで相手を抜くこと',        icon:'ph-person-simple-run'},
+      {label:'パスをつないでチームを動かすこと', icon:'ph-arrows-split'},
+      {label:'守ってシュートを止めること',       icon:'ph-shield-check'},
+      {label:'声を出してチームをまとめること',   icon:'ph-megaphone'}
+    ]
+  },
+  {
+    id:9, type:'single',
+    text:'試合でどんなとき一番楽しい？', note:'',
+    options:[
+      {label:'点を取ったとき',       icon:'ph-fire'},
+      {label:'ナイスパスが通ったとき', icon:'ph-arrows-left-right'},
+      {label:'相手の攻撃を止めたとき', icon:'ph-shield'},
+      {label:'チームが勝ったとき',    icon:'ph-trophy'}
+    ]
+  },
+  {
+    id:10, type:'single',
+    text:'サッカーで今一番悩んでいることは？', note:'',
+    options:[
+      {label:'ドリブルがうまくいかない',   icon:'ph-person-simple-run'},
+      {label:'シュートが入らない',         icon:'ph-soccer-ball'},
+      {label:'試合で緊張してしまう',       icon:'ph-heartbeat'},
+      {label:'仲間とうまく連携できない',   icon:'ph-users-three'},
+      {label:'まだ始めたばかりでわからない', icon:'ph-question'}
+    ]
+  },
+  {
+    id:11, type:'single',
+    text:'憧れるポジションは？', note:'',
+    options:[
+      {label:'フォワード（点を取る）',        icon:'ph-target'},
+      {label:'ミッドフィルダー（つなぐ・走る）', icon:'ph-compass'},
+      {label:'ディフェンダー（守る・支える）', icon:'ph-shield-check'},
+      {label:'ゴールキーパー（ゴールを守る）', icon:'ph-hands-praying'},
+      {label:'まだわからない',               icon:'ph-question'}
+    ]
+  },
+  {
+    id:12, type:'text',
+    text:'お子さまのお名前（任意）',
+    note:'診断結果でお名前を表示します。スキップ可',
+    placeholder:'例：たろう'
+  }
+];
+
+// =============================================
+// タイプ定義
+// =============================================
+const TYPE_MAP = [
+  {
+    name:'🌟 ファンタジスタ型',
+    icon:'ph-star',
+    desc:'存在感抜群！目立つことが大好きで、ゴールへの強い意欲を持つタイプ。個の技術で試合を動かす魔術師です。',
+    points:[
+      'ゴール前での積極的なシュート意識が自然と育つ',
+      'チームを引っ張るリーダーシップが期待できる',
+      '試合経験を重ねるほど輝くポテンシャルを秘めている'
+    ],
+    growth:[
+      '1対1のドリブル突破が安定して通るようになる',
+      '枠内シュート率が大幅に向上し、得点感覚が磨かれる',
+      '試合の流れを読んでポジションを取る意識が芽生える'
+    ]
+  },
+  {
+    name:'🛡️ 鉄壁の守護者型',
+    icon:'ph-shield-check',
+    desc:'堅実で誠実。コツコツと努力を続け、チームの守りを支える存在。長期的な成長が最も期待できるタイプです。',
+    points:[
+      '継続的な努力でスキルを着実に積み上げられる',
+      '守備の要として仲間から厚い信頼を得られる',
+      '動画分析などの知的アプローチで大きく伸びる'
+    ],
+    growth:[
+      '相手FWへの対応が落ち着いてできるようになる',
+      '空中戦・ヘディングの競り合いに自信がつく',
+      '守から攻への素早いビルドアップができるようになる'
+    ]
+  },
+  {
+    name:'🎯 知将アンカー型',
+    icon:'ph-compass',
+    desc:'チームのハートとなるタイプ。仲間を活かす視野の広さと、冷静な状況判断が最大の武器です。',
+    points:[
+      '仲間の特性を活かすパス・連携力が育つ',
+      'チームの雰囲気を高めるムードメーカーになれる',
+      '広い視野とゲームメイク能力が期待できる'
+    ],
+    growth:[
+      'ワンタッチ・ツータッチの判断が早くなる',
+      'スペースへの走り込みとパスの連携精度が上がる',
+      '試合全体を俯瞰して「次の一手」を読めるようになる'
+    ]
+  },
+  {
+    name:'🔥 闘将ストライカー型',
+    icon:'ph-flame',
+    desc:'負けん気が強く、競争の中で輝くタイプ。強い精神力と勝利への執念がチームを勝利に導きます。',
+    points:[
+      '競争環境で急成長できるメンタルの強さを持つ',
+      '目標達成への強い意志と高い持続力がある',
+      '上位クラスでの切磋琢磨で真価を発揮する'
+    ],
+    growth:[
+      '接触プレーで当たり負けしない体幹とメンタルが育つ',
+      'プレッシャー下でも落ち着いてシュートが打てる',
+      'チームを鼓舞するキャプテンシップが開花し始める'
+    ]
+  }
+];
+
+function getCategory(grade, exp, goal) {
+  if (grade === 4) return {
+    name:'ジュニアユース',
+    desc:'中学生向けの本格育成カテゴリ。関東U-15リーグに所属し、勝利追求と人格形成を両立した環境で成長できます。'
+  };
+  if (grade === 3 && goal >= 2) return {
+    name:'ステップアップクラス / ジュニア',
+    desc:'小学5・6年生で上を目指す選手向けのクラス。11人制でジュニアユース移行を見据えた本格指導を受けられます。（鹿島校のみ）'
+  };
+  if (grade >= 2 && exp >= 1) return {
+    name:'スクール（スペシャルクラス）',
+    desc:'経験者向けのスキルアップクラス。レジスタFC提携・動画分析・カウンセリングシートを活用した本格指導で技術を磨きます。（鹿島校・水戸校）'
+  };
+  return {
+    name:'スクール（ベーシッククラス）',
+    desc:'未経験・初心者のお子さまでも安心してスタートできるクラス。楽しくボールに慣れながら、サッカーの魅力を体験します。（鹿島校・水戸校）'
+  };
+}
+
+function calcScore(ans) {
+  let s = 18;
+  const grade = ans[0] ?? 0, exp = ans[1] ?? 0;
+  if (grade === 0 && exp === 0) s += 20;
+  else if (grade <= 1) s += 17;
+  else if (grade <= 2) s += 14;
+  else s += 10;
+  const g4 = ans[3] ?? 0, g6 = ans[5] ?? 0;
+  const d = Math.abs(g4 - g6);
+  if (d === 0) s += 30; else if (d === 1) s += 22; else if (d === 2) s += 14; else s += 8;
+  const chks = Array.isArray(ans[6]) ? ans[6].length : 0;
+  s += Math.min(chks * 4, 32);
+  return Math.min(Math.max(s, 10), 100);
+}
+
+function getScoreLabel(score) {
+  if (score >= 90) return '今すぐスタートが最適！伸び盛りのタイミングです';
+  if (score >= 70) return '高い適性あり！体験会で確かめてみましょう';
+  if (score >= 50) return '着実に成長できます！焦らずステップアップを';
+  return '小さく始めて楽しさを発見しましょう';
+}
+
+function calcRadar(ans) {
+  const q3 = ans[2] ?? 0, q4 = ans[3] ?? 0, q5 = ans[4] ?? 0, q6 = ans[5] ?? 0;
+  const v = [60, 60, 60, 60, 60];
+  if (q3===0)      { v[0]+=20; v[2]+=10; }
+  else if (q3===1) { v[0]+=15; v[4]+=15; }
+  else if (q3===2) { v[3]+=20; v[4]+=10; }
+  else             { v[2]+=20; v[1]+=10; }
+  if (q4===0) v[0]+=15; else if (q4===1) v[1]+=15; else if (q4===2) v[3]+=15; else { v[2]+=10; v[4]+=10; }
+  if (q5===1) { v[4]+=12; v[1]+=5; } else if (q5===2) { v[4]+=20; v[1]+=10; } else v[4]+=4;
+  if (q6>=2) { v[2]+=8; v[4]+=8; } else if (q6===1) v[3]+=8;
+  return v.map(n => Math.min(n, 100));
+}
+
+// =============================================
+// 状態
+// =============================================
+const TOTAL_Q = QUESTIONS.length; // 12
+let currentQ    = 0;
+let answers     = Array(TOTAL_Q).fill(null);
+let multiSel    = [];
+let goingForward = true;
+
+// =============================================
+// 画面切り替え
+// =============================================
+function showScreen(id) {
+  const isStart = id === 'screen-start';
+  document.getElementById('screen-start').style.display = isStart ? 'block' : 'none';
+  const qw = document.getElementById('quiz-wrapper');
+  const fb = document.getElementById('field-bg');
+  if (isStart) {
+    qw.classList.remove('active');
+    fb.classList.remove('active');
+  } else {
+    qw.classList.add('active');
+    fb.classList.add('active');
+    document.querySelectorAll('.qscreen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+  window.scrollTo(0, 0);
+}
+
+function startDiagnosis() {
+  currentQ    = 0;
+  answers     = Array(TOTAL_Q).fill(null);
+  multiSel    = [];
+  goingForward = true;
+  showScreen('screen-question');
+  renderQ('right');
+}
+
+// =============================================
+// 質問描画
+// =============================================
+function renderQ(dir = 'right') {
+  const q   = QUESTIONS[currentQ];
+  const pct = Math.round(((currentQ + 1) / TOTAL_Q) * 100);
+
+  document.getElementById('q-cur').textContent  = currentQ + 1;
+  document.getElementById('q-pct').textContent  = pct + '%';
+  document.getElementById('prog-fill').style.width = ((currentQ + 1) / TOTAL_Q * 100) + '%';
+  document.getElementById('q-num').textContent  = 'Q' + (currentQ + 1);
+  document.getElementById('q-text').textContent = q.text;
+  document.getElementById('q-note').textContent = q.note || '';
+
+  const card = document.getElementById('q-card');
+  card.classList.remove('slide-right','slide-left');
+  void card.offsetWidth;
+  card.classList.add(dir === 'right' ? 'slide-right' : 'slide-left');
+
+  const optsEl = document.getElementById('q-opts');
+  optsEl.innerHTML = '';
+
+  if (q.type === 'single') {
+    q.options.forEach((opt, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'opt-btn' + (answers[currentQ] === i ? ' selected' : '');
+      btn.innerHTML = `<span class="opt-icon"><i class="ph-bold ${opt.icon}" style="font-size:16px"></i></span><span>${opt.label}</span>`;
+      btn.onclick = () => selectSingle(i);
+      optsEl.appendChild(btn);
+    });
+    setNextBtn(answers[currentQ] !== null && answers[currentQ] !== undefined);
+  } else if (q.type === 'multi') {
+    multiSel = Array.isArray(answers[currentQ]) ? [...answers[currentQ]] : [];
+    q.options.forEach((opt, i) => {
+      const checked = multiSel.includes(i);
+      const btn = document.createElement('button');
+      btn.className = 'chk-btn' + (checked ? ' checked' : '');
+      btn.innerHTML = `<span class="chk-box">${checked ? '<i class="ph-bold ph-check" style="font-size:13px"></i>' : ''}</span><span>${opt.label}</span>`;
+      btn.onclick = () => toggleChk(i, btn);
+      optsEl.appendChild(btn);
+    });
+    setNextBtn(true);
+  } else {
+    const inp = document.createElement('input');
+    inp.type = 'text';
+    inp.className = 'txt-input';
+    inp.placeholder = q.placeholder;
+    inp.value = answers[currentQ] || '';
+    inp.oninput = e => { answers[currentQ] = e.target.value; };
+    optsEl.appendChild(inp);
+    setNextBtn(true);
+  }
+
+  document.getElementById('btn-back').style.visibility = currentQ === 0 ? 'hidden' : 'visible';
+}
+
+function setNextBtn(enabled) {
+  document.getElementById('btn-next').disabled = !enabled;
+}
+
+function selectSingle(idx) {
+  answers[currentQ] = idx;
+  const btns = document.getElementById('q-opts').querySelectorAll('.opt-btn');
+  btns.forEach((b, i) => {
+    b.classList.toggle('selected', i === idx);
+    if (i === idx) {
+      b.classList.add('ripple');
+      setTimeout(() => b.classList.remove('ripple'), 400);
+    }
+    const icon = b.querySelector('.opt-icon');
+    if (icon) { const iEl = icon.querySelector('i'); if (iEl) iEl.style.color = i === idx ? 'white' : ''; }
+  });
+  setTimeout(() => { goingForward = true; goNext(); }, 320);
+}
+
+function toggleChk(idx, btn) {
+  const pos = multiSel.indexOf(idx);
+  if (pos === -1) {
+    multiSel.push(idx);
+    btn.classList.add('checked');
+    btn.querySelector('.chk-box').innerHTML = '<i class="ph-bold ph-check" style="font-size:13px"></i>';
+  } else {
+    multiSel.splice(pos, 1);
+    btn.classList.remove('checked');
+    btn.querySelector('.chk-box').innerHTML = '';
+  }
+  answers[currentQ] = [...multiSel];
+}
+
+function saveCurrentAnswer() {
+  if (QUESTIONS[currentQ].type === 'multi') answers[currentQ] = [...multiSel];
+  if (QUESTIONS[currentQ].type === 'text') {
+    const inp = document.getElementById('q-opts').querySelector('input');
+    if (inp) answers[currentQ] = inp.value.trim();
+  }
+}
+
+function goNext() {
+  saveCurrentAnswer();
+  if (currentQ < TOTAL_Q - 1) {
+    currentQ++;
+    renderQ('right');
+  } else {
+    showScreen('screen-loading');
+    runLoading();
+  }
+}
+
+function goBack() {
+  if (currentQ > 0) { saveCurrentAnswer(); currentQ--; renderQ('left'); }
+}
+
+// =============================================
+// ローディング
+// =============================================
+function runLoading() {
+  const hints = [
+    'ファンタジスタ型 の可能性を感知中...',
+    '鉄壁の守護者型 の可能性を感知中...',
+    '知将アンカー型 の可能性を感知中...',
+    '闘将ストライカー型 の可能性を感知中...'
+  ];
+  const q3 = answers[2];
+  if (q3 !== null && q3 !== undefined) {
+    setTimeout(() => {
+      document.getElementById('loading-hint').innerHTML =
+        `<span style="color:#FFD700;font-weight:700">${hints[q3]}</span>`;
+    }, 900);
+  }
+
+  const fill = document.getElementById('circ-fill');
+  const circumference = 2 * Math.PI * 54;
+  fill.style.strokeDasharray = circumference;
+  fill.style.strokeDashoffset = circumference;
+  let progress = 0;
+  const circId = setInterval(() => {
+    progress += 2;
+    if (progress > 100) { clearInterval(circId); return; }
+    fill.style.strokeDashoffset = circumference - (circumference * progress / 100);
+  }, 25);
+
+  ['lstep-1','lstep-2','lstep-3','lstep-4'].forEach(id =>
+    document.getElementById(id).classList.remove('visible','done')
+  );
+  const steps = ['lstep-1','lstep-2','lstep-3','lstep-4'];
+  steps.forEach((id, i) => {
+    setTimeout(() => {
+      document.getElementById(id).classList.add('visible');
+      if (i > 0) document.getElementById(steps[i-1]).classList.add('done');
+    }, i * 530);
+  });
+
+  setTimeout(() => {
+    document.getElementById('lstep-4').classList.add('done');
+    buildResult();
+    showScreen('screen-result');
+    revealResult();
+  }, 2500);
+}
+
+// =============================================
+// 結果画面
+// =============================================
+let chartInst = null;
+
+function buildResult() {
+  const name = (answers[TOTAL_Q - 1] || '').trim();
+  document.getElementById('result-name').textContent = name ? `${name}さんの診断結果` : '診断結果';
+
+  const q3   = answers[2] ?? 0;
+  const type = TYPE_MAP[q3];
+  document.getElementById('type-name').textContent = type.name;
+  document.getElementById('type-desc').textContent = type.desc;
+  document.getElementById('type-icon').className   = `ph-bold ${type.icon}`;
+  document.getElementById('r-points').innerHTML =
+    type.points.map(p => `<li><i class="ph-bold ph-caret-right"></i>${p}</li>`).join('');
+  document.getElementById('r-growth').innerHTML =
+    type.growth.map(p => `<li><i class="ph-bold ph-caret-right"></i>${p}</li>`).join('');
+
+  const cat = getCategory(answers[0] ?? 0, answers[1] ?? 0, answers[5] ?? 0);
+  document.getElementById('r-cat').textContent      = cat.name;
+  document.getElementById('r-cat-desc').textContent = cat.desc;
+
+  const score = calcScore(answers);
+  document.getElementById('score-msg').textContent = getScoreLabel(score);
+
+  renderRadar(calcRadar(answers));
+  animateScore(score);
+}
+
+function revealResult() {
+  const els = document.querySelectorAll('#screen-result .reveal');
+  els.forEach((el, i) => setTimeout(() => el.classList.add('in'), i * 120));
+}
+
+function animateScore(target) {
+  let cur = 0;
+  const el    = document.getElementById('score-display');
+  const gauge = document.getElementById('gauge-fill');
+  const arcLen = Math.PI * 65;
+  gauge.style.strokeDasharray  = arcLen;
+  gauge.style.strokeDashoffset = arcLen;
+
+  const duration  = 1400;
+  const startTime = performance.now();
+
+  function step(now) {
+    const elapsed  = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased    = 1 - Math.pow(1 - progress, 3);
+    cur = Math.round(eased * target);
+    el.textContent = cur;
+    gauge.style.strokeDashoffset = arcLen - (arcLen * eased * target / 100);
+    if (progress < 1) {
+      requestAnimationFrame(step);
+    } else {
+      setTimeout(() => {
+        document.getElementById('gauge-num').style.filter  = 'blur(14px)';
+        document.getElementById('score-msg').style.filter  = 'blur(8px)';
+        document.getElementById('score-lock').classList.add('show');
+      }, 1200);
+    }
+  }
+  requestAnimationFrame(step);
+}
+
+function renderRadar(data) {
+  const ctx = document.getElementById('radarChart').getContext('2d');
+  if (chartInst) chartInst.destroy();
+  chartInst = new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels: ['テクニック\n適性','フィジカル\n適性','メンタル\n強さ','チーム\nワーク','成長\nポテンシャル'],
+      datasets: [{
+        data: data,
+        backgroundColor: 'rgba(255,215,0,0.14)',
+        borderColor: '#FFD700',
+        borderWidth: 2.5,
+        pointBackgroundColor: '#FFD700',
+        pointBorderColor: '#0A1628',
+        pointBorderWidth: 2,
+        pointRadius: 5
+      }]
+    },
+    options: {
+      responsive: true,
+      animation: { duration: 1000, easing: 'easeOutQuart' },
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: () => '🔒 LINEで詳細を確認' } }
+      },
+      scales: {
+        r: {
+          min: 0, max: 100,
+          ticks: { stepSize: 20, display: false },
+          grid: { color: 'rgba(168,192,214,0.12)' },
+          angleLines: { color: 'rgba(168,192,214,0.12)' },
+          pointLabels: { color: '#A8C0D6', font: { size: 11, family:"'Noto Sans JP',sans-serif" } }
+        }
+      }
+    }
+  });
+}
+
+// =============================================
+// INIT
+// =============================================
+document.addEventListener('DOMContentLoaded', () => {
+  // Start screen is shown by default via CSS; quiz wrapper is hidden
+});
+</script>
+</body>
+</html>
