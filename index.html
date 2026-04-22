@@ -2655,9 +2655,6 @@ function animateScore(target) {
     }
     // 適性スコアblurロック（社内確認モードでは .blur-lock { display:none !important } により非表示）
     setTimeout(() => {
-      document.getElementById('gauge-num').style.filter  = 'blur(14px)';
-      document.getElementById('score-msg').style.filter  = 'blur(8px)';
-      document.getElementById('gauge-fill').style.opacity = '0.08';
       document.getElementById('score-lock').classList.add('show');
     }, 1200);
   }
