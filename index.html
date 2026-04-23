@@ -307,15 +307,14 @@
       display: flex; flex-direction: column;
       min-height: clamp(480px, 55vw, 720px);
     }
-    /* 右側の暗いパネル — skewX(14deg)で斜め線に沿ったカット */
+    /* 右側の暗いパネル — clip-pathをJSで正確に設定（金ラインと完全一致） */
     .sup-strip::before {
       display: block; content: '';
-      position: absolute; top: 0; bottom: 0;
-      left: 53%; right: -20%;
-      background: linear-gradient(to right, #021228 0%, #041833 50%);
-      transform: skewX(14deg);
-      transform-origin: top left;
+      position: absolute; inset: 0;
+      background: linear-gradient(to right, #021228 0%, #041833 60%);
+      clip-path: var(--before-clip, polygon(54% 0%, 100% 0%, 100% 100%, 68% 100%));
       z-index: 1;
+      pointer-events: none;
     }
 
     .sup-left-fade {
@@ -477,7 +476,6 @@
       :root { --sup-stats-h: 130px; }
       .sup-strip { min-height: 500px; }
 
-      .sup-strip::before { left: 47%; }  /* モバイル divider 位置（48%）に合わせる */
       .sup-coach-wrap { left: 0; width: 57%; }
       .sup-photo { filter: drop-shadow(2px 0 12px rgba(0,0,0,.5)); }
       .sup-vname { font-size: 11px; left: 8px; }
@@ -2739,11 +2737,42 @@ function renderRadar(data) {
 }
 
 // =============================================
+// 鈴木氏カード：背景の斜めカットを金ラインに正確に合わせる
+// =============================================
+function alignSupBackground() {
+  const strip = document.querySelector('.sup-strip');
+  const bar   = document.querySelector('.sup-divider-bar');
+  if (!strip || !bar) return;
+
+  const W = strip.offsetWidth;
+  const H = strip.offsetHeight;
+
+  // divider-bar の CSS left は transform-origin（top center）の X 座標
+  const barCenterX = bar.offsetLeft + bar.offsetWidth / 2;
+  const barTopY    = -30; // top: -30px
+  const tan14      = Math.tan(14 * Math.PI / 180); // ≈ 0.2493
+
+  // 金ラインの方程式: x(y) = barCenterX + (y - barTopY) * tan14
+  const xTop = barCenterX + (0 - barTopY) * tan14;        // y=0（ストップ上端）
+  const xBot = barCenterX + (H - barTopY) * tan14;        // y=H（ストップ下端）
+
+  const pTop = Math.min((xTop / W * 100), 100).toFixed(2);
+  const pBot = Math.min((xBot / W * 100), 100).toFixed(2);
+
+  strip.style.setProperty(
+    '--before-clip',
+    `polygon(${pTop}% 0%, 100% 0%, 100% 100%, ${pBot}% 100%)`
+  );
+}
+
+// =============================================
 // INIT
 // =============================================
 document.addEventListener('DOMContentLoaded', () => {
   // Start screen is shown by default via CSS; quiz wrapper is hidden
+  alignSupBackground();
 });
+window.addEventListener('resize', alignSupBackground);
 </script>
 </body>
 </html>
