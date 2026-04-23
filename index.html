@@ -294,213 +294,21 @@
     @media (max-width: 720px) { .hero-ball-deco { display:none; } }
 
     /* ============================================================
-       Supervisor strip — recreate_suzuki_ui.html ベース全面リデザイン
+       Supervisor — 完成デザイン画像を全幅表示
     ============================================================ */
     .sup-strip {
-      position: relative; overflow: hidden;
-      /* 左側：明るいネイビー一色（右側は::beforeで斜めカット） */
-      background:
-        radial-gradient(circle at 18% 14%, rgba(196,209,226,.6), rgba(86,111,146,.2) 18%, rgba(14,31,60,.06) 32%, transparent 46%),
-        #10274e;
-      border-top: 2px solid rgba(200,155,60,0.5);
-      border-bottom: 1px solid rgba(200,155,60,0.2);
-      display: flex; flex-direction: column;
-      min-height: clamp(480px, 55vw, 720px);
+      width: 100%;
+      line-height: 0; /* 画像下の余白をなくす */
     }
-    /* 右側の暗いパネル — clip-pathをJSで正確に設定（金ラインと完全一致） */
-    .sup-strip::before {
-      display: block; content: '';
-      position: absolute; inset: 0;
-      background: linear-gradient(to right, #021228 0%, #041833 60%);
-      clip-path: var(--before-clip, polygon(54% 0%, 100% 0%, 100% 100%, 68% 100%));
-      z-index: 1;
-      pointer-events: none;
+    .sup-strip img {
+      width: 100%;
+      height: auto;
+      display: block;
     }
-
-    .sup-left-fade {
-      position: absolute; inset: 0 auto 0 0; width: 56%;
-      background: linear-gradient(90deg, rgba(154,182,213,.08), rgba(255,255,255,.05) 28%, transparent 70%);
-      pointer-events: none; z-index: 1;
-    }
-
-    /* stats高さ定数 — coach-wrap・sup-rightと合わせる */
-    :root { --sup-stats-h: clamp(140px, 17vw, 220px); }
-
-    .sup-coach-wrap {
-      position: absolute;
-      left: 0; top: 0; bottom: var(--sup-stats-h);
-      width: 60%; overflow: hidden; z-index: 3;
-      /* supervisor.png は透過PNG — clip-path不要、人物シルエットが自然な境界になる */
-    }
-    .sup-photo {
-      position: absolute; left: 0; bottom: 0;
-      height: 100%; width: auto;
-      object-fit: contain; object-position: left bottom;
-      filter: contrast(1.03) saturate(.95) drop-shadow(4px 0 20px rgba(0,0,0,.4));
-      display: block; margin-top: 0;
-    }
-    .sup-coach-shadow {
-      position: absolute; inset: 0;
-      background: linear-gradient(90deg, transparent 40%, rgba(3,20,43,.3) 68%, rgba(3,20,43,.55) 100%);
-      pointer-events: none;
-    }
-
-    .sup-vname {
-      position: absolute; left: 18px; top: 16px; height: 90%;
-      writing-mode: vertical-rl; text-orientation: mixed;
-      transform: rotate(180deg);
-      font-weight: 800; letter-spacing: .08em;
-      font-size: clamp(22px, 3.5vw, 58px);
-      color: rgba(230,238,248,.18);
-      user-select: none; pointer-events: none; z-index: 4; /* vname：写真の前に */
-      display: block; font-family: 'Arial Narrow', Arial, sans-serif;
-    }
-
-    .sup-divider-bar {
-      position: absolute; top: -30px; left: calc(54% - 4px);
-      width: clamp(4px, 0.6vw, 8px); height: 110%;
-      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(228,198,111,.95) 18%, rgba(166,125,45,.95) 55%, rgba(255,255,255,.08));
-      box-shadow: 0 0 20px rgba(228,198,111,.24);
-      transform: rotate(14deg); transform-origin: top center; z-index: 2; /* 斜め線：写真の後ろ */
-    }
-
-    .sup-right {
-      position: absolute; top: 0; right: 0;
-      width: 47%; bottom: var(--sup-stats-h);
-      padding: clamp(18px, 3.5%, 56px) clamp(16px, 3.5%, 60px) clamp(16px, 2%, 32px) clamp(16px, 3%, 52px);
-      display: flex; flex-direction: column; justify-content: center;
-      z-index: 5; overflow: hidden;
-    }
-
-    .sup-label {
-      display: inline-block;
-      background: rgba(2,10,22,.78); color: #f4c85c;
-      font-size: clamp(11px, 1.3vw, 24px); font-weight: 800;
-      padding: clamp(4px, 0.5vw, 9px) clamp(10px, 1.4vw, 28px);
-      line-height: 1; margin-bottom: clamp(8px, 1.2vw, 20px);
-      align-self: flex-start; flex-shrink: 0;
-    }
-    .sup-subtitle {
-      font-size: clamp(10px, 1.4vw, 26px); font-weight: 700; letter-spacing: .02em;
-      margin: 0 0 clamp(4px, 0.8vw, 12px); color: rgba(255,255,255,0.85);
-      flex-shrink: 0;
-    }
-    .sup-title {
-      margin: 0;
-      font-size: clamp(22px, 3.8vw, 76px);
-      line-height: 1.05; font-weight: 900; letter-spacing: .04em;
-      white-space: nowrap; color: #f5f7fb; flex-shrink: 0;
-    }
-    .sup-underline {
-      width: clamp(40px, 7vw, 110px); height: clamp(2px, 0.3vw, 4px);
-      border-radius: 999px;
-      margin: clamp(8px, 1.2vw, 18px) 0 clamp(8px, 1.4vw, 22px);
-      background: linear-gradient(90deg, transparent 0, #c89b3c 14%, #e4c66f 50%, transparent 100%);
-      flex-shrink: 0;
-    }
-    .sup-quote {
-      position: relative; margin: 0; border: none; background: none;
-      padding: clamp(4px, 0.8vw, 8px) clamp(20px, 3.5vw, 36px) clamp(4px, 0.8vw, 8px) clamp(26px, 4.5vw, 68px);
-      font-size: clamp(11px, 1.5vw, 32px); line-height: 1.6;
-      color: #f8fafc; font-weight: 500; letter-spacing: .03em;
-      font-style: normal; display: block; flex-shrink: 0;
-    }
-    .sup-quote::before, .sup-quote::after {
-      position: absolute;
-      font-size: clamp(36px, 5.5vw, 100px); line-height: 1;
-      color: rgba(200,155,60,.92); font-weight: 900; font-family: Georgia, serif;
-    }
-    .sup-quote::before { content: "\201C"; left: 0; top: 2px; }
-    .sup-quote::after  { display: none; } /* ❞ は sup-right::after に移動 */
-    /* ❞ を右パネル右下コーナーに配置（テキストと重ならない） */
-    .sup-right::after {
-      content: "\201D";
-      position: absolute; right: clamp(10px, 2vw, 24px); bottom: clamp(16px, 2.5vw, 36px);
-      font-size: clamp(40px, 5.5vw, 100px); line-height: 1;
-      color: rgba(200,155,60,.45); font-weight: 900; font-family: Georgia, serif;
-      pointer-events: none;
-    }
-    .sup-role {
-      margin-top: clamp(8px, 1.2vw, 28px);
-      color: #e4c66f; font-size: clamp(9px, 1.1vw, 26px); font-weight: 700; letter-spacing: .06em;
-      flex-shrink: 0;
-    }
-
-    /* Stats */
-    .sup-stats {
-      margin-top: auto; flex-shrink: 0;
-      display: grid; grid-template-columns: repeat(3, 1fr);
-      height: var(--sup-stats-h);
-      border-top: 1px solid rgba(228,198,111,.65);
-      box-shadow: 0 0 0 1px rgba(228,198,111,.08) inset, 0 0 22px rgba(228,198,111,.18);
-      background: linear-gradient(180deg, rgba(1,20,47,.82), rgba(3,17,41,.95));
-      position: relative; z-index: 4; padding: 0;
-    }
-    .sup-stat {
-      position: relative;
-      padding: clamp(8px, 1.5vw, 24px) clamp(6px, 1.2vw, 20px);
-      display: flex; flex-direction: column;
-      justify-content: center; align-items: center; text-align: center;
-      background: none; border: none; border-radius: 0; min-width: 0;
-    }
-    .sup-stat + .sup-stat::before {
-      content: ""; position: absolute; left: 0; top: 16px; bottom: 16px;
-      width: 1px; background: rgba(228,198,111,.28);
-    }
-    .sup-icon-circle {
-      width: clamp(28px, 4vw, 72px); height: clamp(28px, 4vw, 72px);
-      border: clamp(2px, 0.25vw, 3px) solid rgba(200,155,60,.95);
-      border-radius: 50%; display: grid; place-items: center;
-      font-size: clamp(13px, 2vw, 38px); margin-bottom: clamp(4px, 0.7vw, 12px);
-    }
-    .sup-stat-main {
-      font-size: clamp(13px, 2vw, 52px); font-weight: 900; line-height: 1.05;
-      margin-bottom: clamp(4px, 0.6vw, 12px); white-space: nowrap;
-      background: linear-gradient(135deg, #fff 40%, #e4c66f);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-    }
-    .sup-pill {
-      padding: clamp(3px, 0.5vw, 10px) clamp(5px, 1vw, 16px);
-      line-height: 1; font-weight: 900; font-size: clamp(7px, 1vw, 22px);
-      color: #0e1727;
-      background: linear-gradient(90deg, #d2ae58 0%, #ebcf78 48%, #d2ae58 100%);
-      clip-path: polygon(6% 0, 100% 0, 94% 100%, 0 100%);
-      box-shadow: 0 2px 8px rgba(0,0,0,.25); white-space: nowrap;
-    }
-
-    /* ============================================================
-       モバイル：絶対配置を維持しつつサイズ調整（≤720px）
-       Image #6 参照：左写真 / 斜めライン / 右テキスト / 下stats
-    ============================================================ */
-    @media (max-width: 720px) {
-      :root { --sup-stats-h: 130px; }
-      .sup-strip { min-height: 500px; }
-
-      .sup-coach-wrap { left: 0; width: 57%; }
-      .sup-photo { filter: drop-shadow(2px 0 12px rgba(0,0,0,.5)); }
-      .sup-vname { font-size: 11px; left: 8px; }
-      .sup-divider-bar { left: calc(48% - 3px); width: 5px; }
-
-      .sup-right {
-        width: 52%;
-        padding: 16px 12px 12px 14px;
-      }
-      .sup-right::after { font-size: 36px; right: 6px; bottom: 10px; }
-
-      .sup-label   { font-size: 10px; padding: 3px 10px; margin-bottom: 8px; }
-      .sup-subtitle{ font-size: 10px; margin-bottom: 4px; }
-      .sup-title   { font-size: 22px; white-space: normal; }
-      .sup-underline{ width: 40px; margin: 8px 0 10px; }
-      .sup-quote   { font-size: 11px; line-height: 1.6; padding: 3px 6px 3px 26px; }
-      .sup-quote::before { font-size: 32px; }
-      .sup-role    { font-size: 9px; margin-top: 8px; }
-
-      .sup-stats { height: var(--sup-stats-h); }
-      .sup-stat  { padding: 8px 4px; }
-      .sup-icon-circle { width: 34px; height: 34px; font-size: 16px; margin-bottom: 5px; border-width: 2px; }
-      .sup-stat-main   { font-size: 13px; margin-bottom: 4px; }
-      .sup-pill        { font-size: 8px; padding: 3px 6px; }
-      .sup-stat + .sup-stat::before { top: 10px; bottom: 10px; }
+    .sup-sr-only {
+      position: absolute; width: 1px; height: 1px;
+      padding: 0; margin: -1px; overflow: hidden;
+      clip: rect(0,0,0,0); white-space: nowrap; border: 0;
     }
 
     /* ============================================================
@@ -1412,41 +1220,12 @@
 
   <!-- Supervisor strip -->
   <div class="sup-strip">
-    <div class="sup-left-fade"></div>
-    <div class="sup-coach-wrap">
-      <img src="img/supervisor.png" class="sup-photo" alt="監督">
-      <div class="sup-coach-shadow"></div>
-    </div>
-    <span class="sup-vname">MASATO SUZUKI</span>
-    <div class="sup-divider-bar"></div>
-    <div class="sup-right">
-      <div class="sup-label">監修</div>
-      <div class="sup-subtitle">カシマアカデミーダイレクター</div>
-      <h2 class="sup-title">鈴木 雅人 氏</h2>
-      <div class="sup-underline"></div>
-      <blockquote class="sup-quote">
-        自分のことを、<br>
-        自分の言葉で<br>
-        語れる選手になってほしい。
-      </blockquote>
-      <div class="sup-role">鹿島学園高校サッカー部 総監督</div>
-    </div>
-    <div class="sup-stats">
-      <div class="sup-stat">
-        <div class="sup-icon-circle">🏆</div>
-        <div class="sup-stat-main">準優勝</div>
-        <div class="sup-pill">全国高校選手権大会</div>
-      </div>
-      <div class="sup-stat">
-        <div class="sup-icon-circle">⏱</div>
-        <div class="sup-stat-main">30年以上</div>
-        <div class="sup-pill">指導実績</div>
-      </div>
-      <div class="sup-stat">
-        <div class="sup-icon-circle">⚽</div>
-        <div class="sup-stat-main">多数輩出</div>
-        <div class="sup-pill">プロ・強豪校選手</div>
-      </div>
+    <img src="img/supervisor-card.jpg" alt="監修 カシマアカデミーダイレクター 鈴木雅人氏。自分のことを、自分の言葉で語れる選手になってほしい。全国高校選手権大会 準優勝、指導実績30年以上、プロ・強豪校選手を多数輩出。">
+    <div class="sup-sr-only">
+      監修。カシマアカデミーダイレクター。鈴木雅人氏。
+      自分のことを、自分の言葉で語れる選手になってほしい。
+      鹿島学園高等学校サッカー部 総監督。
+      全国高校選手権大会 準優勝。指導実績 30年以上。プロ・強豪校選手 多数輩出。
     </div>
   </div>
 
@@ -2737,42 +2516,11 @@ function renderRadar(data) {
 }
 
 // =============================================
-// 鈴木氏カード：背景の斜めカットを金ラインに正確に合わせる
-// =============================================
-function alignSupBackground() {
-  const strip = document.querySelector('.sup-strip');
-  const bar   = document.querySelector('.sup-divider-bar');
-  if (!strip || !bar) return;
-
-  const W = strip.offsetWidth;
-  const H = strip.offsetHeight;
-
-  // divider-bar の CSS left は transform-origin（top center）の X 座標
-  const barCenterX = bar.offsetLeft + bar.offsetWidth / 2;
-  const barTopY    = -30; // top: -30px
-  const tan14      = Math.tan(14 * Math.PI / 180); // ≈ 0.2493
-
-  // 金ラインの方程式: x(y) = barCenterX + (y - barTopY) * tan14
-  const xTop = barCenterX + (0 - barTopY) * tan14;        // y=0（ストップ上端）
-  const xBot = barCenterX + (H - barTopY) * tan14;        // y=H（ストップ下端）
-
-  const pTop = Math.min((xTop / W * 100), 100).toFixed(2);
-  const pBot = Math.min((xBot / W * 100), 100).toFixed(2);
-
-  strip.style.setProperty(
-    '--before-clip',
-    `polygon(${pTop}% 0%, 100% 0%, 100% 100%, ${pBot}% 100%)`
-  );
-}
-
-// =============================================
 // INIT
 // =============================================
 document.addEventListener('DOMContentLoaded', () => {
   // Start screen is shown by default via CSS; quiz wrapper is hidden
-  alignSupBackground();
 });
-window.addEventListener('resize', alignSupBackground);
 </script>
 </body>
 </html>
