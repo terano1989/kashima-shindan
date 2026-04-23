@@ -354,58 +354,125 @@
     }
 
     /* ============================================================
-       モバイル：写真50% | 縦線 | テキスト50% / 統計全幅
+       モバイル：写真40% | テキスト60% / 統計全幅
+       参照デザイン：監督カード（2026-04-23リデザイン）
     ============================================================ */
+    .sup-photo-wrap {
+      display: contents; /* デスクトップではラッパー非表示 */
+    }
+    .sup-vname { display: none; }
+
     @media (max-width: 720px) {
       .sup-strip {
         display: grid;
-        grid-template-columns: 1fr 1px 1fr;
+        grid-template-columns: 5fr 6fr;
         grid-template-rows: auto auto;
-        grid-template-areas: "photo div body" "stats stats stats";
+        grid-template-areas: "photo body" "stats stats";
         align-items: stretch;
         padding: 0;
       }
-      .sup-photo {
+      .sup-photo-wrap {
+        display: block;
         grid-area: photo;
+        position: relative;
+        overflow: hidden;
+        min-height: 230px;
+      }
+      .sup-photo {
         width: 100%;
         height: 100%;
-        min-height: 220px;
         object-fit: cover;
         object-position: 45% top;
-        align-self: stretch;
+        display: block;
         margin-top: 0;
         filter: none;
       }
-      .sup-divider {
-        grid-area: div;
-        display: block;
-        width: 1px;
-        background: rgba(255,215,0,0.35);
-        margin: 0;
-        align-self: stretch;
+      /* 写真右端：右側へのグラデーションフェード */
+      .sup-photo-wrap::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to right, transparent 60%, rgba(6,14,31,0.85) 100%);
+        pointer-events: none;
       }
+      /* 縦書き名前テキスト */
+      .sup-vname {
+        display: block;
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%) rotate(180deg);
+        writing-mode: vertical-rl;
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        color: rgba(255,215,0,0.35);
+        text-transform: uppercase;
+        font-family: 'Arial Narrow', Arial, sans-serif;
+        z-index: 1;
+        pointer-events: none;
+      }
+      .sup-divider { display: none; }
       .sup-body {
         grid-area: body;
         flex: initial;
-        padding: 22px 16px 22px 18px;
+        padding: 20px 14px 20px 16px;
         min-width: 0;
         display: flex;
         flex-direction: column;
         justify-content: center;
       }
-      .sup-credential { font-size: 12px; margin-bottom: 10px; }
-      .sup-name { font-size: 14px; margin-bottom: 12px; }
-      .sup-name strong { font-size: 24px; }
-      .sup-quote { font-size: 14px; line-height: 1.85; }
+      .sup-credential {
+        font-size: 10px;
+        margin-bottom: 8px;
+        background: rgba(255,215,0,0.12);
+        border: 1px solid rgba(255,215,0,0.4);
+        border-radius: 4px;
+        display: inline-flex;
+        align-self: flex-start;
+        padding: 2px 8px;
+      }
+      .sup-name { font-size: 11px; margin-bottom: 10px; }
+      .sup-name strong { font-size: 20px; }
+      .sup-quote {
+        font-size: 12px;
+        line-height: 1.75;
+        font-style: italic;
+        display: block;
+        position: relative;
+        padding-left: 0;
+        margin-bottom: 10px;
+        gap: 0;
+        align-items: initial;
+      }
+      .sup-quote-bar { display: none; }
+      .sup-qdeco {
+        font-family: Georgia, serif;
+        font-size: 20px;
+        line-height: 1;
+        color: var(--gold);
+        display: block;
+        opacity: 0.8;
+      }
+      .sup-qdeco-open { margin-bottom: 2px; }
+      .sup-qdeco-close {
+        text-align: right;
+        margin-top: 2px;
+      }
+      .sup-quote-text {
+        display: block;
+        padding: 0 4px;
+        color: rgba(255,255,255,0.8);
+      }
       .sup-stats {
         grid-area: stats;
         flex-direction: row;
         justify-content: space-around;
         align-items: center;
         gap: 0;
-        padding: 14px 0;
-        border-top: 1px solid rgba(255,255,255,0.1);
-        background: rgba(0,0,0,0.2);
+        padding: 14px 8px;
+        border-top: 1px solid rgba(255,215,0,0.2);
+        background: rgba(0,0,0,0.25);
       }
       .sup-stat {
         background: none;
@@ -414,10 +481,23 @@
         padding: 0;
         flex: 1;
         min-width: 0;
+        text-align: center;
       }
-      .sup-stat i { font-size: 16px; margin-bottom: 4px; }
-      .sup-stat-num { font-size: 20px; }
-      .sup-stat-lbl { font-size: 9px; }
+      .sup-stat i {
+        font-size: 18px;
+        margin-bottom: 5px;
+        display: block;
+        color: var(--gold);
+        background: rgba(255,215,0,0.12);
+        border: 1px solid rgba(255,215,0,0.3);
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        line-height: 36px;
+        margin: 0 auto 6px;
+      }
+      .sup-stat-num { font-size: 16px; margin-top: 0; }
+      .sup-stat-lbl { font-size: 8.5px; }
     }
 
     .sup-credential {
@@ -448,6 +528,8 @@
       background: linear-gradient(to bottom, var(--gold), rgba(255,215,0,0.4));
       border-radius: 2px; flex-shrink: 0; margin-top: 3px;
     }
+    .sup-qdeco { display: none; } /* デスクトップでは非表示 */
+    .sup-quote-text { color: inherit; }
     @media (max-width: 720px) { .sup-quote { font-size: 12px; line-height: 1.75; } }
 
     .sup-sig {
@@ -1388,27 +1470,34 @@
 
   <!-- Supervisor strip -->
   <div class="sup-strip">
-    <img src="img/supervisor.png" class="sup-photo" alt="監督">
+    <div class="sup-photo-wrap">
+      <img src="img/supervisor.png" class="sup-photo" alt="監督">
+      <span class="sup-vname">MASATO SUZUKI</span>
+    </div>
     <div class="sup-body">
       <div class="sup-credential">監修</div>
       <div class="sup-name">カシマアカデミーダイレクター<br><strong>鈴木 雅人 氏</strong></div>
       <div class="sup-quote">
-        <span class="sup-quote-bar"></span>
-        「自分のことを、自分の言葉で<br>語れる選手になってほしい。」
+        <span class="sup-qdeco sup-qdeco-open">&#x201C;</span>
+        <span class="sup-quote-text">自分のことを、自分の言葉で<br>語れる選手になってほしい。</span>
+        <span class="sup-qdeco sup-qdeco-close">&#x201D;</span>
       </div>
-      <div class="sup-sig">鹿島学園高校サッカー部総監督</div>
+      <div class="sup-sig">鹿島学園高校サッカー部 総監督</div>
     </div>
     <div class="sup-divider"></div>
     <div class="sup-stats">
       <div class="sup-stat">
+        <i class="ph-bold ph-trophy"></i>
         <div class="sup-stat-num">準優勝</div>
         <div class="sup-stat-lbl">全国高校選手権大会</div>
       </div>
       <div class="sup-stat">
+        <i class="ph-bold ph-medal"></i>
         <div class="sup-stat-num">30<span class="sup-stat-unit">年以上</span></div>
         <div class="sup-stat-lbl">指導実績</div>
       </div>
       <div class="sup-stat">
+        <i class="ph-bold ph-users-three"></i>
         <div class="sup-stat-num">多数<span class="sup-stat-unit">輩出</span></div>
         <div class="sup-stat-lbl">プロ・強豪校選手</div>
       </div>
